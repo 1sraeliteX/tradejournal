@@ -1,0 +1,201 @@
+import { useState, useEffect } from 'react';
+import { X, Plus, Edit2, Trash2, Save, X as XIcon } from 'lucide-react';
+import { api } from '../services/api';
+import { useAuth } from '../context/AuthContext';
+
+export default function SettingsModal({ isOpen, onClose, onAccountsChange }) {
+  const { user, updateUser } = useAuth();
+  const [limitValue, setLimitValue] = useState('');
+  const [saving, setSaving] = useState(false);
+  const [message, setMessage] = useState('');
+  const [error, setError] = useState('');
+
+  const [accounts, setAccounts] = useState([]);
+  const [editingAccount, setEditingAccount] = useState(null);
+  const [showForm, setShowForm] = useState(false);
+  const [formName, setFormName] = useState('');
+  const [formCapital, setFormCapital] = useState('');
+
+  useEffect(() => {
+    if (isOpen && user) {
+      setLimitValue(user.max_trades_per_day != null ? String(user.max_trades_per_day) : '');
+      setMessage('');
+      setError('');
+      loadAccounts();
+    }
+  }, [isOpen, user]);
+
+  const loadAccounts = async () => {
+    try {
+      const data = await api.accounts.list();
+      setAccounts(data.accounts);
+    } catch {
+      setAccounts([]);
+    }
+  };
+
+  if (!isOpen) return null;
+
+  const handleSaveLimit = async () => {
+    setError('');
+    setMessage('');
+    const parsed = limitValue === '' ? null : parseInt(limitValue, 10);
+    if (parsed !== null && (isNaN(parsed) || parsed < 1)) {
+      setError('Must be a positive number or empty (no limit).');
+      return;
+    }
+    setSaving(true);
+    try {
+      await api.settings.update({ max_trades_per_day: parsed });
+      updateUser({ max_trades_per_day: parsed });
+      setMessage('Settings saved.');
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const resetForm = () => {
+    setShowForm(false);
+    setEditingAccount(null);
+    setFormName('');
+    setFormCapital('');
+  };
+
+  const handleAddAccount = async () => {
+    if (!formName.trim()) return;
+    try {
+      if (editingAccount) {
+        await api.accounts.update(editingAccount.id, { name: formName.trim(), capital: parseFloat(formCapital) || 0 });
+      } else {
+        await api.accounts.create({ name: formName.trim(), capital: parseFloat(formCapital) || 0 });
+      }
+      resetForm();
+      await loadAccounts();
+      onAccountsChange?.();
+    } catch (err) {
+      setError(err.message);
+    }
+  };
+
+  const handleDeleteAccount = async (id) => {
+    try {
+      await api.accounts.delete(id);
+      await loadAccounts();
+      onAccountsChange?.();
+    } catch (err) {
+      setError(err.message);
+    }
+  };
+
+  const startEdit = (account) => {
+    setEditingAccount(account);
+    setFormName(account.name);
+    setFormCapital(String(account.capital || ''));
+    setShowForm(true);
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
+      <div className="bg-neutral-900 rounded-xl border border-neutral-800 w-full max-w-md mx-4 max-h-[90vh] overflow-y-auto">
+        <div className="flex items-center justify-between p-6 border-b border-neutral-800">
+          <h2 className="text-lg font-semibold text-white">Settings</h2>
+          <button onClick={onClose} className="text-neutral-400 hover:text-white text-xl leading-none">&times;</button>
+        </div>
+        <div className="p-6 space-y-6">
+          {error && <div className="bg-red-500/10 border border-red-500/30 text-red-400 rounded-lg p-3 text-sm">{error}</div>}
+          {message && <div className="bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 rounded-lg p-3 text-sm">{message}</div>}
+
+          {/* Daily Trade Limit */}
+          <div>
+            <label className="block text-sm text-neutral-400 mb-1">Max Trades Per Day</label>
+            <input
+              type="number" min="1"
+              value={limitValue}
+              onChange={(e) => setLimitValue(e.target.value)}
+              placeholder="No limit"
+              className="w-full bg-neutral-800 border border-neutral-700 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-emerald-500"
+            />
+            <p className="text-xs text-neutral-500 mt-1">Leave empty for no limit.</p>
+            <button onClick={handleSaveLimit} disabled={saving}
+              className="mt-2 bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-lg text-sm transition-colors disabled:opacity-50">
+              {saving ? 'Saving...' : 'Save'}
+            </button>
+          </div>
+
+          <div className="border-t border-neutral-800" />
+
+          {/* Accounts */}
+          <div>
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="text-sm font-semibold text-white">Trading Accounts</h3>
+              <button
+                onClick={() => { resetForm(); setShowForm(true); }}
+                className="flex items-center gap-1 text-sm text-emerald-400 hover:text-emerald-300 transition-colors"
+              >
+                <Plus className="w-3.5 h-3.5" /> Add Account
+              </button>
+            </div>
+
+            {showForm && (
+              <div className="bg-neutral-800 rounded-lg border border-neutral-700 p-4 mb-3 space-y-3">
+                <div>
+                  <label className="block text-xs text-neutral-400 mb-1">Account Name</label>
+                  <input
+                    type="text" value={formName} onChange={(e) => setFormName(e.target.value)}
+                    placeholder="e.g. Personal, Prop Firm, Demo"
+                    className="w-full bg-neutral-900 border border-neutral-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-emerald-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs text-neutral-400 mb-1">Capital ($)</label>
+                  <input
+                    type="number" step="0.01" min="0" value={formCapital} onChange={(e) => setFormCapital(e.target.value)}
+                    placeholder="0.00"
+                    className="w-full bg-neutral-900 border border-neutral-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-emerald-500"
+                  />
+                </div>
+                <div className="flex gap-2">
+                  <button onClick={resetForm}
+                    className="flex-1 bg-neutral-700 hover:bg-neutral-600 text-white rounded-lg py-1.5 text-sm transition-colors">
+                    Cancel
+                  </button>
+                  <button onClick={handleAddAccount}
+                    className="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg py-1.5 text-sm transition-colors">
+                    {editingAccount ? 'Update' : 'Add'}
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {accounts.length === 0 && !showForm && (
+              <p className="text-sm text-neutral-500">No accounts yet. Add one to track separate trading accounts.</p>
+            )}
+
+            <div className="space-y-2">
+              {accounts.map((a) => (
+                <div key={a.id} className="bg-neutral-800 rounded-lg border border-neutral-700 p-3 flex items-center justify-between">
+                  <div>
+                    <span className="text-sm font-medium text-white">{a.name}</span>
+                    {a.capital > 0 && (
+                      <span className="text-xs text-neutral-400 ml-2">${Number(a.capital).toLocaleString('en-US', { minimumFractionDigits: 2 })}</span>
+                    )}
+                  </div>
+                  <div className="flex gap-1">
+                    <button onClick={() => startEdit(a)} className="p-1.5 text-neutral-500 hover:text-white transition-colors rounded hover:bg-neutral-700">
+                      <Edit2 className="w-3.5 h-3.5" />
+                    </button>
+                    <button onClick={() => handleDeleteAccount(a.id)} className="p-1.5 text-neutral-500 hover:text-red-400 transition-colors rounded hover:bg-neutral-700">
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
