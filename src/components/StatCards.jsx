@@ -30,7 +30,7 @@ export default function StatCards({ month, accountId, accountCapital, refreshKey
     return (
       <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
         {cards.map((c) => (
-          <div key={c.key} className="bg-neutral-900 rounded-xl border border-neutral-800 p-5 animate-pulse">
+          <div key={c.key} className="bg-neutral-900 rounded-xl border border-neutral-800 p-4 sm:p-5 animate-pulse">
             <div className="h-4 bg-neutral-800 rounded w-16 mb-3" />
             <div className="h-8 bg-neutral-800 rounded w-24" />
           </div>
@@ -77,7 +77,7 @@ export default function StatCards({ month, accountId, accountCapital, refreshKey
   return (
     <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
       {cards.map((card) => (
-        <div key={card.key} className="bg-neutral-900 rounded-xl border border-neutral-800 p-5">
+        <div key={card.key} className="bg-neutral-900 rounded-xl border border-neutral-800 p-4 sm:p-5">
           <div className="flex items-center gap-2 mb-3">
             <span className="text-lg">{card.icon}</span>
             <span className="text-neutral-400 text-sm">{card.label}</span>

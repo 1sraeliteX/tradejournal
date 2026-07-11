@@ -80,7 +80,7 @@ export default function CalendarGrid({ year, month, trades, onDayClick, onPrevMo
   };
 
   return (
-    <div className="bg-neutral-900 rounded-xl border border-neutral-800 p-6">
+    <div className="bg-neutral-900 rounded-xl border border-neutral-800 p-3 sm:p-6">
       <div className="flex items-center justify-between mb-6">
         <button onClick={onPrevMonth} className="text-neutral-400 hover:text-white transition-colors p-2">
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -95,7 +95,7 @@ export default function CalendarGrid({ year, month, trades, onDayClick, onPrevMo
         </button>
       </div>
 
-      <div className="grid grid-cols-7 gap-1">
+      <div className="grid grid-cols-7 gap-0.5 sm:gap-1">
         {DAYS.map((d) => (
           <div key={d} className="text-center text-neutral-500 text-xs font-medium py-2">{d}</div>
         ))}
@@ -108,7 +108,7 @@ export default function CalendarGrid({ year, month, trades, onDayClick, onPrevMo
               key={i}
               onClick={() => cell.isCurrentMonth && onDayClick(cell.date)}
               className={`
-                relative rounded-lg border p-2 min-h-[72px] text-left transition-colors
+                relative rounded-lg border p-1 sm:p-2 min-h-[56px] sm:min-h-[72px] text-left transition-colors
                 ${cell.isCurrentMonth ? `${cellStyle || 'bg-neutral-900'} border-white/20 hover:border-white/40` : 'bg-neutral-900/50 border-transparent'}
                 ${isToday ? 'ring-1 ring-emerald-500' : ''}
                 ${(!stats || !cell.isCurrentMonth) ? 'cursor-default' : 'cursor-pointer'}

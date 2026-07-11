@@ -112,8 +112,8 @@ export default function WeeklyStats({ trades, accountCapital, accountId, year, m
   );
 
   return (
-    <div className="mb-4 bg-neutral-900 rounded-xl border border-neutral-800 p-5">
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+    <div className="mb-4 bg-neutral-900 rounded-xl border border-neutral-800 p-3 sm:p-5">
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2 sm:gap-4">
         {data.weeks.map((w) => {
           const range = getWeekDateRange(year, month, w.week);
           return (

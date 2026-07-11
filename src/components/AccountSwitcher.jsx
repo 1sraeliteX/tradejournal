@@ -52,7 +52,7 @@ export default function AccountSwitcher({ accounts, selectedId, onSelect, onAcco
       </button>
 
       {open && (
-        <div className="absolute top-full left-0 mt-1 bg-neutral-800 border border-neutral-700 rounded-lg py-1 min-w-[200px] shadow-lg z-50">
+        <div className="absolute top-full left-0 mt-1 bg-neutral-800 border border-neutral-700 rounded-lg py-1 min-w-[180px] sm:min-w-[200px] shadow-lg z-50">
           <button
             onClick={() => { onSelect(null); setOpen(false); }}
             className={`w-full text-left px-4 py-2 text-sm transition-colors ${
