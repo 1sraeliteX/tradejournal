@@ -30,6 +30,34 @@ class TradeController
         }
     }
 
+    public function export(): void
+    {
+        try {
+            $user = Middleware::authenticate();
+            $from = Request::query('from');
+            $to = Request::query('to');
+            $accountId = Request::query('account_id');
+
+            if (!$from || !$to) {
+                http_response_code(422);
+                echo json_encode(['error' => 'from and to params required (YYYY-MM-DD)']);
+                return;
+            }
+
+            if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $from) || !preg_match('/^\d{4}-\d{2}-\d{2}$/', $to)) {
+                http_response_code(422);
+                echo json_encode(['error' => 'Invalid date format. Use YYYY-MM-DD']);
+                return;
+            }
+
+            $trades = Trade::findByUserAndDateRange($user['sub'], $from, $to, $accountId !== null ? (int) $accountId : null);
+            echo json_encode(['trades' => $trades]);
+        } catch (\Throwable $e) {
+            http_response_code(500);
+            echo json_encode(['error' => 'Failed to export trades: ' . $e->getMessage()]);
+        }
+    }
+
     public function store(): void
     {
         try {

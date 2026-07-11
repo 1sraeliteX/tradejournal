@@ -258,7 +258,7 @@ export default function Dashboard() {
               </div>
             )}
 
-            <WeeklyStats trades={trades} accountCapital={accountCapital} accountId={selectedAccountId} year={year} />
+            <WeeklyStats trades={trades} accountCapital={accountCapital} accountId={selectedAccountId} year={year} month={month} />
 
             <CalendarGrid
               year={year}

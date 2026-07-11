@@ -135,6 +135,24 @@ class Trade
         return $stmt->fetch() ?: [];
     }
 
+    public static function findByUserAndDateRange(int $userId, string $start, string $end, ?int $accountId = null): array
+    {
+        $db = Database::getInstance();
+        $sql = 'SELECT * FROM trades WHERE user_id = :user_id AND trade_date BETWEEN :start AND :end';
+        $params = [':user_id' => $userId, ':start' => $start, ':end' => $end];
+
+        if ($accountId !== null) {
+            $sql .= ' AND account_id = :account_id';
+            $params[':account_id'] = $accountId;
+        }
+
+        $sql .= ' ORDER BY trade_date ASC, created_at ASC';
+
+        $stmt = $db->prepare($sql);
+        $stmt->execute($params);
+        return $stmt->fetchAll();
+    }
+
     public static function bestTradeByMonth(int $userId, ?string $month = null, ?int $accountId = null): ?array
     {
         $db = Database::getInstance();

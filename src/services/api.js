@@ -20,6 +20,7 @@ export const api = {
   },
   trades: {
     list: (query) => request(`/trades?${query}`),
+    export: (params) => request(`/trades/export?${new URLSearchParams(params)}`),
     create: (body) => request('/trades', { method: 'POST', body: JSON.stringify(body) }),
     update: (id, body) => request(`/trades/${id}`, { method: 'PUT', body: JSON.stringify(body) }),
     delete: (id) => request(`/trades/${id}`, { method: 'DELETE' }),

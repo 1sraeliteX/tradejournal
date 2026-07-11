@@ -38,6 +38,7 @@ $router->post('/api/auth/register', [AuthController::class, 'register']);
 $router->post('/api/auth/login', [AuthController::class, 'login']);
 $router->post('/api/auth/logout', [AuthController::class, 'logout']);
 
+$router->get('/api/trades/export', [TradeController::class, 'export']);
 $router->get('/api/trades', [TradeController::class, 'index']);
 $router->post('/api/trades', [TradeController::class, 'store']);
 $router->put('/api/trades/{id}', [TradeController::class, 'update']);
