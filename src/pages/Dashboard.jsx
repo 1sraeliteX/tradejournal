@@ -1,8 +1,11 @@
 import { useState, useEffect, useCallback } from 'react';
+import { Moon, Sun } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { useTheme } from '../context/ThemeContext';
 import { api } from '../services/api';
 import StatCards from '../components/StatCards';
 import CalendarGrid from '../components/CalendarGrid';
+import WeeklyStats from '../components/WeeklyStats';
 import TradeModal from '../components/TradeModal';
 import DayDetail from '../components/DayDetail';
 import TradeList from '../components/TradeList';
@@ -123,7 +126,9 @@ export default function Dashboard() {
     setSelectedDay(date);
   };
 
-  const maxPerDay = user?.max_trades_per_day;
+  const maxPerDay = selectedAccountId
+    ? (accounts.find(a => a.id === selectedAccountId)?.max_trades_per_day ?? null)
+    : null;
 
   const checkLimit = (date) => {
     if (!maxPerDay) return true;
@@ -171,6 +176,8 @@ export default function Dashboard() {
     ? (accounts.find(a => a.id === selectedAccountId)?.capital || 0)
     : 0;
 
+  const { theme, toggleTheme } = useTheme();
+
   return (
     <div className="min-h-screen bg-neutral-950">
       <header className="border-b border-neutral-800">
@@ -193,6 +200,11 @@ export default function Dashboard() {
             <button onClick={() => setShowSettings(true)}
               className="text-sm text-neutral-400 hover:text-white transition-colors">
               Settings
+            </button>
+            <span className="text-neutral-500 text-sm">|</span>
+            <button onClick={toggleTheme}
+              className="text-neutral-400 hover:text-white transition-colors p-1">
+              {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
             </button>
             <span className="text-neutral-500 text-sm">|</span>
             <span className="text-neutral-400 text-sm">{user?.name}</span>
@@ -245,6 +257,8 @@ export default function Dashboard() {
                 </span>
               </div>
             )}
+
+            <WeeklyStats trades={trades} accountCapital={accountCapital} accountId={selectedAccountId} year={year} />
 
             <CalendarGrid
               year={year}

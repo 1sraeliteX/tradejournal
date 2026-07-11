@@ -13,10 +13,19 @@ class StatsController
         try {
             $user = Middleware::authenticate();
             $allTime = Request::query('all_time');
-            $month = $allTime ? null : Request::query('month', date('Y-m'));
+            $year = Request::query('year');
+            $month = $year ?: (Request::query('month', date('Y-m')));
             $accountId = Request::query('account_id');
 
-            if (!$allTime && !preg_match('/^\d{4}-\d{2}$/', $month)) {
+            if ($allTime) {
+                $month = null;
+            } elseif ($year) {
+                if (!preg_match('/^\d{4}$/', $year)) {
+                    http_response_code(422);
+                    echo json_encode(['error' => 'Invalid year format. Use YYYY']);
+                    return;
+                }
+            } elseif (!preg_match('/^\d{4}-\d{2}$/', $month)) {
                 http_response_code(422);
                 echo json_encode(['error' => 'Invalid month format. Use YYYY-MM']);
                 return;
@@ -30,8 +39,8 @@ class StatsController
             $wins = (int) ($stats['wins'] ?? 0);
             $losses = (int) ($stats['losses'] ?? 0);
 
-            $bestDay = Trade::bestDayByMonth($user['sub'], $month, $aid);
-            $worstDay = Trade::worstDayByMonth($user['sub'], $month, $aid);
+            $bestDay = Trade::bestTradeByMonth($user['sub'], $month, $aid);
+            $worstDay = Trade::worstTradeByMonth($user['sub'], $month, $aid);
 
             echo json_encode([
                 'total_trades' => $totalTrades,

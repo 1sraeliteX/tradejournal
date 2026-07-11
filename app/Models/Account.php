@@ -26,11 +26,12 @@ class Account
     public static function create(int $userId, array $data): int
     {
         $db = Database::getInstance();
-        $stmt = $db->prepare('INSERT INTO accounts (user_id, name, capital) VALUES (:user_id, :name, :capital)');
+        $stmt = $db->prepare('INSERT INTO accounts (user_id, name, capital, max_trades_per_day) VALUES (:user_id, :name, :capital, :max_trades_per_day)');
         $stmt->execute([
             ':user_id' => $userId,
             ':name' => $data['name'],
             ':capital' => (float) ($data['capital'] ?? 0),
+            ':max_trades_per_day' => isset($data['max_trades_per_day']) && $data['max_trades_per_day'] !== '' ? (int) $data['max_trades_per_day'] : null,
         ]);
         return (int) $db->lastInsertId();
     }
@@ -38,10 +39,11 @@ class Account
     public static function update(int $id, array $data): bool
     {
         $db = Database::getInstance();
-        $stmt = $db->prepare('UPDATE accounts SET name = :name, capital = :capital WHERE id = :id');
+        $stmt = $db->prepare('UPDATE accounts SET name = :name, capital = :capital, max_trades_per_day = :max_trades_per_day WHERE id = :id');
         $stmt->execute([
             ':name' => $data['name'],
             ':capital' => (float) ($data['capital'] ?? 0),
+            ':max_trades_per_day' => isset($data['max_trades_per_day']) && $data['max_trades_per_day'] !== '' ? (int) $data['max_trades_per_day'] : null,
             ':id' => $id,
         ]);
         return $stmt->rowCount() > 0;

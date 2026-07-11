@@ -55,8 +55,8 @@ export default function CalendarGrid({ year, month, trades, onDayClick, onPrevMo
   const getCellStyle = (cell) => {
     const stats = dayStats[cell.date];
     if (!stats || !cell.isCurrentMonth) return '';
-    if (stats.pnl > 0) return 'bg-emerald-700';
-    if (stats.pnl < 0) return 'bg-red-700';
+    if (stats.pnl > 0) return 'bg-emerald-600';
+    if (stats.pnl < 0) return 'bg-red-600';
     return '';
   };
 
@@ -102,14 +102,14 @@ export default function CalendarGrid({ year, month, trades, onDayClick, onPrevMo
         {grid.map((cell, i) => {
           const stats = dayStats[cell.date];
           const isToday = cell.date === todayStr;
+          const cellStyle = getCellStyle(cell);
           return (
             <button
               key={i}
               onClick={() => cell.isCurrentMonth && onDayClick(cell.date)}
               className={`
                 relative rounded-lg border p-2 min-h-[72px] text-left transition-colors
-                ${cell.isCurrentMonth ? 'bg-neutral-900 border-white/20 hover:border-white/40' : 'bg-neutral-900/50 border-transparent'}
-                ${getCellStyle(cell)}
+                ${cell.isCurrentMonth ? `${cellStyle || 'bg-neutral-900'} border-white/20 hover:border-white/40` : 'bg-neutral-900/50 border-transparent'}
                 ${isToday ? 'ring-1 ring-emerald-500' : ''}
                 ${(!stats || !cell.isCurrentMonth) ? 'cursor-default' : 'cursor-pointer'}
               `}
@@ -121,6 +121,9 @@ export default function CalendarGrid({ year, month, trades, onDayClick, onPrevMo
                 <div className={`text-xs font-semibold mt-1 ${getAmountColor(cell)}`}>
                   {formatDayValue(stats)}
                 </div>
+              )}
+              {stats && cell.isCurrentMonth && stats.count > 0 && (
+                <div className="text-[10px] text-white mt-0.5">{stats.count} trade{stats.count !== 1 ? 's' : ''}</div>
               )}
             </button>
           );

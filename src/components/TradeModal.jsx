@@ -18,6 +18,7 @@ export default function TradeModal({ isOpen, onClose, onSave, trade, prefillDate
     result: 'win',
     pnl_amount: '',
     target_amount: '',
+    risk_reward: '',
     notes: '',
   });
   const [saving, setSaving] = useState(false);
@@ -36,6 +37,7 @@ export default function TradeModal({ isOpen, onClose, onSave, trade, prefillDate
         result: trade.result,
         pnl_amount: Math.abs(trade.pnl_amount),
         target_amount: trade.target_amount || '',
+        risk_reward: trade.risk_reward || '',
         notes: trade.notes || '',
       });
     } else {
@@ -50,6 +52,7 @@ export default function TradeModal({ isOpen, onClose, onSave, trade, prefillDate
         result: 'win',
         pnl_amount: '',
         target_amount: '',
+        risk_reward: '',
         notes: '',
       });
     }
@@ -147,14 +150,34 @@ export default function TradeModal({ isOpen, onClose, onSave, trade, prefillDate
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-sm text-neutral-400 mb-1">Lot Size</label>
-              <input type="number" step="0.01" min="0.01" value={form.lot_size} onChange={(e) => handleChange('lot_size', e.target.value)} required
+              <input type="text" inputMode="decimal" value={form.lot_size} onChange={(e) => handleChange('lot_size', e.target.value)} required
                 className="w-full bg-neutral-800 border border-neutral-700 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-emerald-500" />
             </div>
             <div>
-              <label className="block text-sm text-neutral-400 mb-1">Target ($)</label>
-              <input type="number" step="0.01" min="0.01" value={form.target_amount} onChange={(e) => handleChange('target_amount', e.target.value)} required
-                className="w-full bg-neutral-800 border border-neutral-700 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-emerald-500" />
+              <label className="block text-sm text-neutral-400 mb-1">Risk/Reward</label>
+              <select value={form.risk_reward} onChange={(e) => handleChange('risk_reward', e.target.value)}
+                className="w-full bg-neutral-800 border border-neutral-700 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-emerald-500">
+                <option value="">Select</option>
+                <option value="1:1">1:1</option>
+                <option value="1:2">1:2</option>
+                <option value="1:3">1:3</option>
+                <option value="1:4">1:4</option>
+                <option value="1:5">1:5</option>
+                <option value="2:1">2:1</option>
+                <option value="3:1">3:1</option>
+                <option value="other">Other</option>
+              </select>
             </div>
+          </div>
+          <div>
+            <label className="block text-sm text-neutral-400 mb-1">Risk Value</label>
+            <input type="text" inputMode="decimal" value={form.risk_value} onChange={(e) => handleChange('risk_value', e.target.value)} required
+              className="w-full bg-neutral-800 border border-neutral-700 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-emerald-500" />
+          </div>
+          <div>
+            <label className="block text-sm text-neutral-400 mb-1">Target ($)</label>
+            <input type="text" inputMode="decimal" value={form.target_amount} onChange={(e) => handleChange('target_amount', e.target.value)}
+              className="w-full bg-neutral-800 border border-neutral-700 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-emerald-500" />
           </div>
 
           <div>
@@ -171,12 +194,6 @@ export default function TradeModal({ isOpen, onClose, onSave, trade, prefillDate
                 </button>
               ))}
             </div>
-          </div>
-
-          <div>
-            <label className="block text-sm text-neutral-400 mb-1">Risk Value</label>
-            <input type="number" step="0.01" min="0.01" value={form.risk_value} onChange={(e) => handleChange('risk_value', e.target.value)} required
-              className="w-full bg-neutral-800 border border-neutral-700 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-emerald-500" />
           </div>
 
           <div>
@@ -197,7 +214,7 @@ export default function TradeModal({ isOpen, onClose, onSave, trade, prefillDate
 
           <div>
             <label className="block text-sm text-neutral-400 mb-1">P&L Amount ($)</label>
-            <input type="number" step="0.01" value={form.pnl_amount} onChange={(e) => handleChange('pnl_amount', e.target.value)} required
+            <input type="text" inputMode="decimal" value={form.pnl_amount} onChange={(e) => handleChange('pnl_amount', e.target.value)} required
               className="w-full bg-neutral-800 border border-neutral-700 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-emerald-500" />
           </div>
 

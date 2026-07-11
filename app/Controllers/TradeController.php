@@ -43,14 +43,17 @@ class TradeController
                 return;
             }
 
-            $userRecord = User::findById($user['sub']);
-            $maxPerDay = $userRecord['max_trades_per_day'] ?? null;
-            if ($maxPerDay !== null) {
-                $existingCount = Trade::countByUserAndDate($user['sub'], $data['trade_date']);
-                if ($existingCount >= (int) $maxPerDay) {
-                    http_response_code(422);
-                    echo json_encode(['error' => "Daily trade limit reached ({$existingCount}/{$maxPerDay}). Adjust your limit in settings to add more."]);
-                    return;
+            $accountId = $data['account_id'] ?? null;
+            if ($accountId !== null) {
+                $account = \App\Models\Account::findById((int) $accountId);
+                $maxPerDay = $account ? ($account['max_trades_per_day'] ?? null) : null;
+                if ($maxPerDay !== null) {
+                    $existingCount = Trade::countByUserAndDate($user['sub'], $data['trade_date']);
+                    if ($existingCount >= (int) $maxPerDay) {
+                        http_response_code(422);
+                        echo json_encode(['error' => "Daily trade limit reached ({$existingCount}/{$maxPerDay}). Adjust limit in account settings to add more."]);
+                        return;
+                    }
                 }
             }
 

@@ -135,12 +135,12 @@ class Trade
         return $stmt->fetch() ?: [];
     }
 
-    public static function bestDayByMonth(int $userId, ?string $month = null, ?int $accountId = null): ?array
+    public static function bestTradeByMonth(int $userId, ?string $month = null, ?int $accountId = null): ?array
     {
         $db = Database::getInstance();
-        $sql = 'SELECT trade_date, SUM(pnl_amount) as day_pnl
+        $sql = 'SELECT trade_date, pnl_amount as day_pnl
                 FROM trades
-                WHERE user_id = :user_id';
+                WHERE user_id = :user_id AND pnl_amount > 0';
         $params = [':user_id' => $userId];
 
         if ($month !== null) {
@@ -153,7 +153,7 @@ class Trade
             $params[':account_id'] = $accountId;
         }
 
-        $sql .= ' GROUP BY trade_date HAVING day_pnl > 0 ORDER BY day_pnl DESC LIMIT 1';
+        $sql .= ' ORDER BY pnl_amount DESC LIMIT 1';
 
         $stmt = $db->prepare($sql);
         $stmt->execute($params);
@@ -161,12 +161,12 @@ class Trade
         return $row ?: null;
     }
 
-    public static function worstDayByMonth(int $userId, ?string $month = null, ?int $accountId = null): ?array
+    public static function worstTradeByMonth(int $userId, ?string $month = null, ?int $accountId = null): ?array
     {
         $db = Database::getInstance();
-        $sql = 'SELECT trade_date, SUM(pnl_amount) as day_pnl
+        $sql = 'SELECT trade_date, pnl_amount as day_pnl
                 FROM trades
-                WHERE user_id = :user_id';
+                WHERE user_id = :user_id AND pnl_amount < 0';
         $params = [':user_id' => $userId];
 
         if ($month !== null) {
@@ -179,7 +179,7 @@ class Trade
             $params[':account_id'] = $accountId;
         }
 
-        $sql .= ' GROUP BY trade_date HAVING day_pnl < 0 ORDER BY day_pnl ASC LIMIT 1';
+        $sql .= ' ORDER BY pnl_amount ASC LIMIT 1';
 
         $stmt = $db->prepare($sql);
         $stmt->execute($params);

@@ -2,6 +2,31 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --n3: 212 212 216;
+  --n4: 161 161 170;
+  --n5: 113 113 122;
+  --n6: 82 82 91;
+  --n7: 63 63 70;
+  --n8: 38 38 38;
+  --n9: 23 23 23;
+  --n95: 10 10 10;
+  --white: 255 255 255;
+  --black: 0 0 0;
+}
+
+[data-theme="light"] {
+  --n3: 82 82 91;
+  --n4: 113 113 122;
+  --n5: 161 161 170;
+  --n6: 212 212 216;
+  --n7: 227 227 227;
+  --n8: 237 237 237;
+  --n9: 255 255 255;
+  --n95: 250 250 250;
+  --white: 10 10 10;
+}
+
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;

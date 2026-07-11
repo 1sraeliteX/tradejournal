@@ -5,7 +5,6 @@ import { useAuth } from '../context/AuthContext';
 
 export default function SettingsModal({ isOpen, onClose, onAccountsChange }) {
   const { user, updateUser } = useAuth();
-  const [limitValue, setLimitValue] = useState('');
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
@@ -15,10 +14,10 @@ export default function SettingsModal({ isOpen, onClose, onAccountsChange }) {
   const [showForm, setShowForm] = useState(false);
   const [formName, setFormName] = useState('');
   const [formCapital, setFormCapital] = useState('');
+  const [formLimit, setFormLimit] = useState('');
 
   useEffect(() => {
     if (isOpen && user) {
-      setLimitValue(user.max_trades_per_day != null ? String(user.max_trades_per_day) : '');
       setMessage('');
       setError('');
       loadAccounts();
@@ -36,40 +35,32 @@ export default function SettingsModal({ isOpen, onClose, onAccountsChange }) {
 
   if (!isOpen) return null;
 
-  const handleSaveLimit = async () => {
-    setError('');
-    setMessage('');
-    const parsed = limitValue === '' ? null : parseInt(limitValue, 10);
-    if (parsed !== null && (isNaN(parsed) || parsed < 1)) {
-      setError('Must be a positive number or empty (no limit).');
-      return;
-    }
-    setSaving(true);
-    try {
-      await api.settings.update({ max_trades_per_day: parsed });
-      updateUser({ max_trades_per_day: parsed });
-      setMessage('Settings saved.');
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setSaving(false);
-    }
-  };
-
   const resetForm = () => {
     setShowForm(false);
     setEditingAccount(null);
     setFormName('');
     setFormCapital('');
+    setFormLimit('');
   };
 
   const handleAddAccount = async () => {
     if (!formName.trim()) return;
     try {
+      const payload = {
+        name: formName.trim(),
+        capital: parseFloat(formCapital) || 0,
+      };
+      const parsedLimit = formLimit === '' ? null : parseInt(formLimit, 10);
+      if (parsedLimit !== null && (isNaN(parsedLimit) || parsedLimit < 1)) {
+        setError('Max Trades Per Day must be a positive number or empty.');
+        return;
+      }
+      if (parsedLimit !== null) payload.max_trades_per_day = parsedLimit;
+
       if (editingAccount) {
-        await api.accounts.update(editingAccount.id, { name: formName.trim(), capital: parseFloat(formCapital) || 0 });
+        await api.accounts.update(editingAccount.id, payload);
       } else {
-        await api.accounts.create({ name: formName.trim(), capital: parseFloat(formCapital) || 0 });
+        await api.accounts.create(payload);
       }
       resetForm();
       await loadAccounts();
@@ -93,6 +84,7 @@ export default function SettingsModal({ isOpen, onClose, onAccountsChange }) {
     setEditingAccount(account);
     setFormName(account.name);
     setFormCapital(String(account.capital || ''));
+    setFormLimit(account.max_trades_per_day != null ? String(account.max_trades_per_day) : '');
     setShowForm(true);
   };
 
@@ -106,25 +98,6 @@ export default function SettingsModal({ isOpen, onClose, onAccountsChange }) {
         <div className="p-6 space-y-6">
           {error && <div className="bg-red-500/10 border border-red-500/30 text-red-400 rounded-lg p-3 text-sm">{error}</div>}
           {message && <div className="bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 rounded-lg p-3 text-sm">{message}</div>}
-
-          {/* Daily Trade Limit */}
-          <div>
-            <label className="block text-sm text-neutral-400 mb-1">Max Trades Per Day</label>
-            <input
-              type="number" min="1"
-              value={limitValue}
-              onChange={(e) => setLimitValue(e.target.value)}
-              placeholder="No limit"
-              className="w-full bg-neutral-800 border border-neutral-700 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-emerald-500"
-            />
-            <p className="text-xs text-neutral-500 mt-1">Leave empty for no limit.</p>
-            <button onClick={handleSaveLimit} disabled={saving}
-              className="mt-2 bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-lg text-sm transition-colors disabled:opacity-50">
-              {saving ? 'Saving...' : 'Save'}
-            </button>
-          </div>
-
-          <div className="border-t border-neutral-800" />
 
           {/* Accounts */}
           <div>
@@ -148,13 +121,23 @@ export default function SettingsModal({ isOpen, onClose, onAccountsChange }) {
                     className="w-full bg-neutral-900 border border-neutral-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-emerald-500"
                   />
                 </div>
-                <div>
-                  <label className="block text-xs text-neutral-400 mb-1">Capital ($)</label>
-                  <input
-                    type="number" step="0.01" min="0" value={formCapital} onChange={(e) => setFormCapital(e.target.value)}
-                    placeholder="0.00"
-                    className="w-full bg-neutral-900 border border-neutral-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-emerald-500"
-                  />
+                <div className="flex gap-3">
+                  <div className="flex-1">
+                    <label className="block text-xs text-neutral-400 mb-1">Capital ($)</label>
+                    <input
+                      type="text" inputMode="decimal" value={formCapital} onChange={(e) => setFormCapital(e.target.value)}
+                      placeholder="0.00"
+                      className="w-full bg-neutral-900 border border-neutral-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-emerald-500"
+                    />
+                  </div>
+                  <div className="flex-1">
+                    <label className="block text-xs text-neutral-400 mb-1">Max Trades Per Day</label>
+                    <input
+                      type="text" inputMode="numeric" value={formLimit} onChange={(e) => setFormLimit(e.target.value)}
+                      placeholder="No limit"
+                      className="w-full bg-neutral-900 border border-neutral-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-emerald-500"
+                    />
+                  </div>
                 </div>
                 <div className="flex gap-2">
                   <button onClick={resetForm}
@@ -180,6 +163,9 @@ export default function SettingsModal({ isOpen, onClose, onAccountsChange }) {
                     <span className="text-sm font-medium text-white">{a.name}</span>
                     {a.capital > 0 && (
                       <span className="text-xs text-neutral-400 ml-2">${Number(a.capital).toLocaleString('en-US', { minimumFractionDigits: 2 })}</span>
+                    )}
+                    {a.max_trades_per_day != null && (
+                      <span className="text-xs text-neutral-500 ml-2">max {a.max_trades_per_day}/day</span>
                     )}
                   </div>
                   <div className="flex gap-1">

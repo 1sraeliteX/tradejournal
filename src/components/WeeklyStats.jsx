@@ -1,0 +1,90 @@
+import { useMemo, useState, useEffect } from 'react';
+import { api } from '../services/api';
+
+const WEEK_LABELS = ['Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5'];
+
+function getWeekOfMonth(dateStr) {
+  const day = new Date(dateStr + 'T00:00:00').getDate();
+  return Math.floor((day - 1) / 7);
+}
+
+export default function WeeklyStats({ trades, accountCapital, accountId, year }) {
+  const [yearStats, setYearStats] = useState(null);
+
+  useEffect(() => {
+    if (!accountCapital || accountCapital <= 0) return;
+    api.stats.getYear(year, accountId).then(setYearStats).catch(() => {});
+  }, [year, accountId, accountCapital]);
+
+  const data = useMemo(() => {
+    if (!trades || trades.length === 0 || !accountCapital || accountCapital <= 0) return null;
+
+    const weekly = {};
+    let monthPnl = 0, monthWins = 0, monthLosses = 0;
+
+    trades.forEach((t) => {
+      const w = getWeekOfMonth(t.trade_date);
+      const pnl = parseFloat(t.pnl_amount);
+      if (!weekly[w]) weekly[w] = { pnl: 0, wins: 0, losses: 0 };
+      weekly[w].pnl += pnl;
+      if (pnl >= 0) weekly[w].wins += 1;
+      else weekly[w].losses += 1;
+      monthPnl += pnl;
+      if (pnl >= 0) monthWins += 1;
+      else monthLosses += 1;
+    });
+
+    const monthPct = (monthPnl / accountCapital) * 100;
+    const monthR = Math.round(monthPct * 10) / 10;
+
+    const items = Object.entries(weekly).map(([w, d]) => {
+      const pct = (d.pnl / accountCapital) * 100;
+      const r = Math.round(pct * 10) / 10;
+      return { week: parseInt(w), pnl: d.pnl, pct: r, wins: d.wins, losses: d.losses };
+    }).sort((a, b) => a.week - b.week);
+
+    return { weeks: items, monthPnl, monthPct: monthR, monthWins, monthLosses };
+  }, [trades, accountCapital]);
+
+  if (!data || data.weeks.length === 0) return null;
+
+  const yearPnl = yearStats ? parseFloat(yearStats.total_pnl) : 0;
+  const yearPct = accountCapital > 0 ? Math.round((yearPnl / accountCapital) * 100 * 10) / 10 : 0;
+  const yearTrades = yearStats ? (yearStats.total_trades || 0) : 0;
+
+  return (
+    <div className="mb-4 bg-neutral-900 rounded-xl border border-neutral-800 p-5">
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+        {data.weeks.map((w) => (
+          <div key={w.week} className="bg-neutral-800/60 rounded-lg p-4 text-center">
+            <div className="text-xs text-neutral-500 mb-2">{WEEK_LABELS[w.week]}</div>
+            <div className={`text-xl font-bold mb-2 ${w.pct >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
+              {w.pct > 0 ? '+' : ''}{w.pct}%
+            </div>
+            <div className="flex items-center justify-center gap-3 text-xs">
+              <span className="text-emerald-400/80">W:{w.wins}</span>
+              <span className="text-red-400/80">L:{w.losses}</span>
+            </div>
+          </div>
+        ))}
+        <div className="bg-emerald-900/20 rounded-lg p-4 text-center ring-1 ring-emerald-700/30">
+          <div className="text-xs text-neutral-500 mb-2">Month</div>
+          <div className={`text-xl font-bold mb-2 ${data.monthPct >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
+            {data.monthPct > 0 ? '+' : ''}{data.monthPct}%
+          </div>
+          <div className="flex items-center justify-center gap-3 text-xs">
+            <span className="text-emerald-400/80">W:{data.monthWins}</span>
+            <span className="text-red-400/80">L:{data.monthLosses}</span>
+          </div>
+        </div>
+          <div className="bg-neutral-800/60 rounded-lg p-4 text-center ring-1 ring-neutral-600/30">
+            <div className="text-xs text-neutral-500 mb-2">{year}</div>
+            <div className={`text-xl font-bold mb-2 ${yearPct >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
+              {yearPct > 0 ? '+' : ''}{yearPct}%
+            </div>
+            <div className="text-xs text-white">{yearTrades} trade{yearTrades !== 1 ? 's' : ''}</div>
+          </div>
+      </div>
+    </div>
+  );
+}

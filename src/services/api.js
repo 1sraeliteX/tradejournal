@@ -27,6 +27,7 @@ export const api = {
   stats: {
     get: (query) => request(`/stats?${query}`),
     getAllTime: (accountId) => request(`/stats?all_time=1${accountId ? `&account_id=${accountId}` : ''}`),
+    getYear: (year, accountId) => request(`/stats?year=${year}${accountId ? `&account_id=${accountId}` : ''}`),
   },
   settings: {
     get: () => request('/settings'),

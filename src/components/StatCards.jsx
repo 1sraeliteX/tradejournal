@@ -70,7 +70,7 @@ export default function StatCards({ month, accountId, accountCapital, refreshKey
       return balance >= 0 ? 'text-emerald-400' : 'text-red-400';
     }
     if (card.key === 'best_day') return 'text-emerald-400';
-    if (card.key === 'worst_day') return monthStats.worst_day ? 'text-red-400' : 'text-neutral-400';
+    if (card.key === 'worst_day') return allTimeStats.worst_day ? 'text-red-400' : 'text-neutral-400';
     return 'text-white';
   };
 
@@ -82,15 +82,15 @@ export default function StatCards({ month, accountId, accountCapital, refreshKey
             <span className="text-lg">{card.icon}</span>
             <span className="text-neutral-400 text-sm">{card.label}</span>
           </div>
-          {card.key === 'best_day' && monthStats.best_day ? (
+          {card.key === 'best_day' && allTimeStats.best_day ? (
             <div>
-              <div className="text-xs text-neutral-500 mb-1">{formatDayLabel(monthStats.best_day.date)}</div>
-              <div className="text-2xl font-bold text-emerald-400">+${Number(Math.abs(monthStats.best_day.pnl)).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+              <div className="text-xs text-neutral-500 mb-1">{formatDayLabel(allTimeStats.best_day.date)}</div>
+              <div className="text-2xl font-bold text-emerald-400">+${Number(Math.abs(allTimeStats.best_day.pnl)).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
             </div>
-          ) : card.key === 'worst_day' && monthStats.worst_day ? (
+          ) : card.key === 'worst_day' && allTimeStats.worst_day ? (
             <div>
-              <div className="text-xs text-neutral-500 mb-1">{formatDayLabel(monthStats.worst_day.date)}</div>
-              <div className="text-2xl font-bold text-red-400">{formatCurrency(monthStats.worst_day.pnl)}</div>
+              <div className="text-xs text-neutral-500 mb-1">{formatDayLabel(allTimeStats.worst_day.date)}</div>
+              <div className="text-2xl font-bold text-red-400">{formatCurrency(allTimeStats.worst_day.pnl)}</div>
             </div>
           ) : (
             <div className={`text-2xl font-bold ${getValueColor(card)}`}>
