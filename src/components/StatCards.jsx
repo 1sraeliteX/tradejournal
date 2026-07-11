@@ -28,11 +28,11 @@ export default function StatCards({ month, accountId, accountCapital, refreshKey
 
   if (loading) {
     return (
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-3 sm:gap-4 mb-6 sm:mb-8">
         {cards.map((c) => (
-          <div key={c.key} className="bg-neutral-900 rounded-xl border border-neutral-800 p-4 sm:p-5 animate-pulse">
-            <div className="h-4 bg-neutral-800 rounded w-16 mb-3" />
-            <div className="h-8 bg-neutral-800 rounded w-24" />
+          <div key={c.key} className="bg-neutral-900 rounded-xl border border-neutral-800 p-3 sm:p-5 animate-pulse">
+            <div className="h-3 sm:h-4 bg-neutral-800 rounded w-12 sm:w-16 mb-2 sm:mb-3" />
+            <div className="h-6 sm:h-8 bg-neutral-800 rounded w-16 sm:w-24" />
           </div>
         ))}
       </div>
@@ -75,25 +75,25 @@ export default function StatCards({ month, accountId, accountCapital, refreshKey
   };
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
+    <div className="grid grid-cols-2 md:grid-cols-5 gap-3 sm:gap-4 mb-6 sm:mb-8">
       {cards.map((card) => (
-        <div key={card.key} className="bg-neutral-900 rounded-xl border border-neutral-800 p-4 sm:p-5">
-          <div className="flex items-center gap-2 mb-3">
-            <span className="text-lg">{card.icon}</span>
-            <span className="text-neutral-400 text-sm">{card.label}</span>
+        <div key={card.key} className="bg-neutral-900 rounded-xl border border-neutral-800 p-3 sm:p-5 min-w-0">
+          <div className="flex items-center gap-1.5 sm:gap-2 mb-2 sm:mb-3">
+            <span className="text-base sm:text-lg shrink-0">{card.icon}</span>
+            <span className="text-neutral-400 text-[11px] sm:text-sm truncate">{card.label}</span>
           </div>
           {card.key === 'best_day' && allTimeStats.best_day ? (
-            <div>
-              <div className="text-xs text-neutral-500 mb-1">{formatDayLabel(allTimeStats.best_day.date)}</div>
-              <div className="text-2xl font-bold text-emerald-400">+${Number(Math.abs(allTimeStats.best_day.pnl)).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+            <div className="min-w-0">
+              <div className="text-[10px] sm:text-xs text-neutral-500 mb-0.5 sm:mb-1 truncate">{formatDayLabel(allTimeStats.best_day.date)}</div>
+              <div className="text-lg sm:text-2xl font-bold text-emerald-400 truncate">+${Number(Math.abs(allTimeStats.best_day.pnl)).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
             </div>
           ) : card.key === 'worst_day' && allTimeStats.worst_day ? (
-            <div>
-              <div className="text-xs text-neutral-500 mb-1">{formatDayLabel(allTimeStats.worst_day.date)}</div>
-              <div className="text-2xl font-bold text-red-400">{formatCurrency(allTimeStats.worst_day.pnl)}</div>
+            <div className="min-w-0">
+              <div className="text-[10px] sm:text-xs text-neutral-500 mb-0.5 sm:mb-1 truncate">{formatDayLabel(allTimeStats.worst_day.date)}</div>
+              <div className="text-lg sm:text-2xl font-bold text-red-400 truncate">{formatCurrency(allTimeStats.worst_day.pnl)}</div>
             </div>
           ) : (
-            <div className={`text-2xl font-bold ${getValueColor(card)}`}>
+            <div className={`text-lg sm:text-2xl font-bold truncate ${getValueColor(card)}`}>
               {getValue(card)}
             </div>
           )}

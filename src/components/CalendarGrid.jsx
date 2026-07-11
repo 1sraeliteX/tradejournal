@@ -80,24 +80,24 @@ export default function CalendarGrid({ year, month, trades, onDayClick, onPrevMo
   };
 
   return (
-    <div className="bg-neutral-900 rounded-xl border border-neutral-800 p-3 sm:p-6">
-      <div className="flex items-center justify-between mb-6">
-        <button onClick={onPrevMonth} className="text-neutral-400 hover:text-white transition-colors p-2">
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <div className="bg-neutral-900 rounded-xl border border-neutral-800 p-2 sm:p-6">
+      <div className="flex items-center justify-between mb-4 sm:mb-6">
+        <button onClick={onPrevMonth} className="text-neutral-400 hover:text-white transition-colors p-1.5 sm:p-2">
+          <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
           </svg>
         </button>
-        <h2 className="text-lg font-semibold text-white">{monthLabel}</h2>
-        <button onClick={onNextMonth} className="text-neutral-400 hover:text-white transition-colors p-2">
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <h2 className="text-sm sm:text-lg font-semibold text-white">{monthLabel}</h2>
+        <button onClick={onNextMonth} className="text-neutral-400 hover:text-white transition-colors p-1.5 sm:p-2">
+          <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
           </svg>
         </button>
       </div>
 
-      <div className="grid grid-cols-7 gap-0.5 sm:gap-1">
+      <div className="grid grid-cols-7 gap-px sm:gap-1">
         {DAYS.map((d) => (
-          <div key={d} className="text-center text-neutral-500 text-xs font-medium py-2">{d}</div>
+          <div key={d} className="text-center text-neutral-500 text-[10px] sm:text-xs font-medium py-1 sm:py-2">{d}</div>
         ))}
         {grid.map((cell, i) => {
           const stats = dayStats[cell.date];
@@ -108,22 +108,22 @@ export default function CalendarGrid({ year, month, trades, onDayClick, onPrevMo
               key={i}
               onClick={() => cell.isCurrentMonth && onDayClick(cell.date)}
               className={`
-                relative rounded-lg border p-1 sm:p-2 min-h-[56px] sm:min-h-[72px] text-left transition-colors
-                ${cell.isCurrentMonth ? `${cellStyle || 'bg-neutral-900'} border-white/20 hover:border-white/40` : 'bg-neutral-900/50 border-transparent'}
+                relative rounded border sm:rounded-lg border p-0.5 sm:p-2 min-h-[44px] sm:min-h-[72px] text-left transition-colors
+                ${cell.isCurrentMonth ? `${cellStyle || 'bg-neutral-900'} border-white/10 sm:border-white/20 hover:border-white/40` : 'bg-neutral-900/50 border-transparent'}
                 ${isToday ? 'ring-1 ring-emerald-500' : ''}
                 ${(!stats || !cell.isCurrentMonth) ? 'cursor-default' : 'cursor-pointer'}
               `}
             >
-              <span className={`text-xs ${cell.isCurrentMonth ? 'text-neutral-300' : 'text-neutral-600'}`}>
+              <span className={`text-[10px] sm:text-xs ${cell.isCurrentMonth ? 'text-neutral-300' : 'text-neutral-600'}`}>
                 {cell.day}
               </span>
               {stats && cell.isCurrentMonth && (
-                <div className={`text-xs font-semibold mt-1 ${getAmountColor(cell)}`}>
+                <div className={`text-[9px] sm:text-xs font-semibold mt-0.5 sm:mt-1 leading-tight ${getAmountColor(cell)}`}>
                   {formatDayValue(stats)}
                 </div>
               )}
               {stats && cell.isCurrentMonth && stats.count > 0 && (
-                <div className="text-[10px] text-white mt-0.5">{stats.count} trade{stats.count !== 1 ? 's' : ''}</div>
+                <div className="hidden sm:block text-[10px] text-white mt-0.5">{stats.count} trade{stats.count !== 1 ? 's' : ''}</div>
               )}
             </button>
           );

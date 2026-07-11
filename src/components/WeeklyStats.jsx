@@ -117,12 +117,12 @@ export default function WeeklyStats({ trades, accountCapital, accountId, year, m
         {data.weeks.map((w) => {
           const range = getWeekDateRange(year, month, w.week);
           return (
-            <div key={w.week} className="bg-neutral-800/60 rounded-lg p-4 text-center">
-              <div className="text-xs text-neutral-400 mb-2">{WEEK_LABELS[w.week]}</div>
-              <div className={`text-xl font-bold mb-2 ${w.pct >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
+            <div key={w.week} className="bg-neutral-800/60 rounded-lg p-3 sm:p-4 text-center min-w-0">
+              <div className="text-[10px] sm:text-xs text-neutral-400 mb-1 sm:mb-2">{WEEK_LABELS[w.week]}</div>
+              <div className={`text-base sm:text-xl font-bold mb-1 sm:mb-2 ${w.pct >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
                 {w.pct > 0 ? '+' : ''}{w.pct}%
               </div>
-              <div className="flex items-center justify-center gap-3 text-xs">
+              <div className="flex items-center justify-center gap-2 sm:gap-3 text-[10px] sm:text-xs">
                 <span className="text-emerald-400/80">W:{w.wins}</span>
                 <span className="text-red-400/80">L:{w.losses}</span>
               </div>
@@ -130,23 +130,23 @@ export default function WeeklyStats({ trades, accountCapital, accountId, year, m
             </div>
           );
         })}
-        <div className="bg-emerald-900/20 rounded-lg p-4 text-center ring-1 ring-emerald-700/30">
-          <div className="text-xs text-neutral-400 mb-2">Month</div>
-          <div className={`text-xl font-bold mb-2 ${data.monthPct >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
+        <div className="bg-emerald-900/20 rounded-lg p-3 sm:p-4 text-center ring-1 ring-emerald-700/30 min-w-0">
+          <div className="text-[10px] sm:text-xs text-neutral-400 mb-1 sm:mb-2">Month</div>
+          <div className={`text-base sm:text-xl font-bold mb-1 sm:mb-2 ${data.monthPct >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
             {data.monthPct > 0 ? '+' : ''}{data.monthPct}%
           </div>
-          <div className="flex items-center justify-center gap-3 text-xs">
+          <div className="flex items-center justify-center gap-2 sm:gap-3 text-[10px] sm:text-xs">
             <span className="text-emerald-400/80">W:{data.monthWins}</span>
             <span className="text-red-400/80">L:{data.monthLosses}</span>
           </div>
           <ExportBtns from={`${year}-${pad(month)}-01`} to={`${year}-${pad(month)}-${pad(daysInMonth)}`} label="Month" />
         </div>
-        <div className="bg-neutral-800/60 rounded-lg p-4 text-center ring-1 ring-neutral-600/30">
-          <div className="text-xs text-neutral-400 mb-2">{year}</div>
-          <div className={`text-xl font-bold mb-2 ${yearPct >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
+        <div className="bg-neutral-800/60 rounded-lg p-3 sm:p-4 text-center ring-1 ring-neutral-600/30 min-w-0">
+          <div className="text-[10px] sm:text-xs text-neutral-400 mb-1 sm:mb-2">{year}</div>
+          <div className={`text-base sm:text-xl font-bold mb-1 sm:mb-2 ${yearPct >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
             {yearPct > 0 ? '+' : ''}{yearPct}%
           </div>
-          <div className="text-xs text-white mb-1">{yearTrades} trade{yearTrades !== 1 ? 's' : ''}</div>
+          <div className="text-[10px] sm:text-xs text-white mb-1">{yearTrades} trade{yearTrades !== 1 ? 's' : ''}</div>
           <ExportBtns from={`${year}-01-01`} to={`${year}-12-31`} label="Year" />
         </div>
       </div>

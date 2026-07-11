@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { Moon, Sun, Settings } from 'lucide-react';
+import { Settings, Moon, Sun } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import { api } from '../services/api';
@@ -189,52 +189,56 @@ export default function Dashboard() {
   const { theme, toggleTheme } = useTheme();
 
   return (
-    <div className="min-h-screen bg-neutral-950">
+        <div className="min-h-screen bg-neutral-950">
       <header className="border-b border-neutral-800">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-6">
-            <h1 className="text-xl font-bold text-white">TradeJournal</h1>
-            <AccountSwitcher
-              accounts={accounts}
-              selectedId={selectedAccountId}
-              onSelect={setSelectedAccountId}
-              onAccountsChange={loadAccounts}
-            />
-          </div>
-          <div className="flex items-center gap-1 sm:gap-3">
-            <button onClick={toggleTheme}
-              className="text-neutral-400 hover:text-white transition-colors p-1.5">
-              {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
-            </button>
-            <span className="text-neutral-400 text-sm hidden sm:inline">{user?.name}</span>
-            <div className="relative" ref={menuRef}>
-              <button onClick={() => setShowMenu(v => !v)}
-                className="text-neutral-400 hover:text-white transition-colors p-1.5">
-                <Settings className="w-4 h-4" />
-              </button>
-              {showMenu && (
-                <div className="absolute right-0 top-full mt-1 bg-neutral-800 border border-neutral-700 rounded-lg py-1 min-w-[160px] shadow-lg z-50">
-                  <button onClick={() => { setShowTradeList(true); setShowMenu(false); }}
-                    className="w-full text-left px-4 py-2 text-sm text-neutral-400 hover:text-white hover:bg-neutral-700/50 transition-colors">
-                    Trades
-                  </button>
-                  <button onClick={() => { setShowSettings(true); setShowMenu(false); }}
-                    className="w-full text-left px-4 py-2 text-sm text-neutral-400 hover:text-white hover:bg-neutral-700/50 transition-colors">
-                    Settings
-                  </button>
-                  <div className="border-t border-neutral-700 my-1" />
-                  <button onClick={logout}
-                    className="w-full text-left px-4 py-2 text-sm text-neutral-500 hover:text-red-400 hover:bg-neutral-700/50 transition-colors">
-                    Logout
-                  </button>
-                </div>
-              )}
+        <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-3 sm:py-4 flex items-center justify-between gap-2 sm:gap-3">
+          <div className="flex items-center gap-2 sm:gap-6 min-w-0">
+            <h1 className="text-base sm:text-xl font-bold text-white shrink-0">TradeJournal</h1>
+            <div className="min-w-0 max-w-[140px] sm:max-w-none">
+              <AccountSwitcher
+                accounts={accounts}
+                selectedId={selectedAccountId}
+                onSelect={setSelectedAccountId}
+                onAccountsChange={loadAccounts}
+              />
             </div>
+          </div>
+          <div className="relative shrink-0" ref={menuRef}>
+            <button onClick={() => setShowMenu(v => !v)}
+              className="text-neutral-400 hover:text-white transition-colors p-1 sm:p-1.5">
+              <Settings className="w-4 h-4 sm:w-5 sm:h-5" />
+            </button>
+            {showMenu && (
+              <div className="absolute right-0 top-full mt-1 bg-neutral-800 border border-neutral-700 rounded-lg py-1 min-w-[160px] sm:min-w-[180px] shadow-lg z-50">
+                <div className="px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm text-neutral-400 border-b border-neutral-700">
+                  {user?.name}{user?.email ? <span className="block text-[10px] sm:text-xs text-neutral-500 truncate">{user.email}</span> : null}
+                </div>
+                <button onClick={() => { setShowTradeList(true); setShowMenu(false); }}
+                  className="w-full text-left px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm text-neutral-400 hover:text-white hover:bg-neutral-700/50 transition-colors">
+                  Trades
+                </button>
+                <button onClick={() => { setShowSettings(true); setShowMenu(false); }}
+                  className="w-full text-left px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm text-neutral-400 hover:text-white hover:bg-neutral-700/50 transition-colors">
+                  Settings
+                </button>
+                <div className="border-t border-neutral-700 my-0.5 sm:my-1" />
+                <button onClick={toggleTheme}
+                  className="w-full text-left px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm text-neutral-400 hover:text-white hover:bg-neutral-700/50 transition-colors flex items-center justify-between">
+                  <span>{theme === 'dark' ? 'Dark Mode' : 'Light Mode'}</span>
+                  {theme === 'dark' ? <Moon className="w-3 sm:w-3.5 h-3 sm:h-3.5" /> : <Sun className="w-3 sm:w-3.5 h-3 sm:h-3.5" />}
+                </button>
+                <div className="border-t border-neutral-700 my-0.5 sm:my-1" />
+                <button onClick={logout}
+                  className="w-full text-left px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm text-neutral-500 hover:text-red-400 hover:bg-neutral-700/50 transition-colors">
+                  Logout
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8">
+      <main className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-3 sm:py-8 pb-16 sm:pb-8">
         {!accountsLoaded ? null : accounts.length === 0 ? (
           <div className="max-w-md mx-auto mt-16 text-center">
             <h2 className="text-2xl font-bold text-white mb-2">Welcome to TradeJournal</h2>
@@ -293,7 +297,7 @@ export default function Dashboard() {
 
       <button
         onClick={handleOpenAddTrade}
-        className="fixed bottom-6 right-4 sm:bottom-8 sm:right-8 w-12 h-12 sm:w-14 sm:h-14 bg-emerald-600 hover:bg-emerald-500 text-white rounded-full shadow-lg flex items-center justify-center text-xl sm:text-2xl transition-colors z-40"
+        className="fixed bottom-4 right-3 sm:bottom-8 sm:right-8 w-11 h-11 sm:w-14 sm:h-14 bg-emerald-600 hover:bg-emerald-500 text-white rounded-full shadow-lg flex items-center justify-center text-lg sm:text-2xl transition-colors z-40"
       >
         +
       </button>
