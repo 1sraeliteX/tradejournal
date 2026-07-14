@@ -1,16 +1,19 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { Settings, Moon, Sun } from 'lucide-react';
+import { Settings, Moon, Sun, User, Filter, X } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import { api } from '../services/api';
+import { INSTRUMENTS_BY_CATEGORY, CATEGORY_LABELS, SUBCATEGORY_LABELS } from '../constants/instruments';
 import StatCards from '../components/StatCards';
 import CalendarGrid from '../components/CalendarGrid';
 import WeeklyStats from '../components/WeeklyStats';
+import QuoteSection from '../components/QuoteSection';
 import TradeModal from '../components/TradeModal';
 import DayDetail from '../components/DayDetail';
 import TradeList from '../components/TradeList';
 import SettingsModal from '../components/SettingsModal';
 import AccountSwitcher from '../components/AccountSwitcher';
+import OnboardingOverlay from '../components/OnboardingOverlay';
 
 export default function Dashboard() {
   const { user, logout } = useAuth();
@@ -33,6 +36,8 @@ export default function Dashboard() {
   const [onboardingCapital, setOnboardingCapital] = useState('');
   const [creating, setCreating] = useState(false);
   const [statsKey, setStatsKey] = useState(0);
+  const [showOnboarding, setShowOnboarding] = useState(false);
+  const [symbolFilter, setSymbolFilter] = useState('');
   const [showMenu, setShowMenu] = useState(false);
   const menuRef = useRef(null);
 
@@ -78,9 +83,20 @@ export default function Dashboard() {
     }
   };
 
+  const handleOnboardingComplete = () => {
+    localStorage.setItem('onboarding_complete', 'true');
+    setShowOnboarding(false);
+  };
+
   useEffect(() => {
     loadAccounts();
   }, [loadAccounts]);
+
+  useEffect(() => {
+    if (accountsLoaded && accounts.length > 0 && !localStorage.getItem('onboarding_complete')) {
+      setShowOnboarding(true);
+    }
+  }, [accountsLoaded, accounts]);
 
   const fetchTrades = useCallback(async () => {
     setLoading(true);
@@ -181,7 +197,10 @@ export default function Dashboard() {
     }
   }, [limitError]);
 
-  const dayTrades = selectedDay ? trades.filter((t) => t.trade_date === selectedDay) : [];
+  const filteredTrades = symbolFilter
+    ? trades.filter((t) => t.pair?.toUpperCase() === symbolFilter.toUpperCase())
+    : trades;
+  const dayTrades = selectedDay ? filteredTrades.filter((t) => t.trade_date === selectedDay) : [];
   const accountCapital = selectedAccountId
     ? (accounts.find(a => a.id === selectedAccountId)?.capital || 0)
     : 0;
@@ -203,37 +222,44 @@ export default function Dashboard() {
               />
             </div>
           </div>
-          <div className="relative shrink-0" ref={menuRef}>
-            <button onClick={() => setShowMenu(v => !v)}
-              className="text-neutral-400 hover:text-white transition-colors p-1 sm:p-1.5">
-              <Settings className="w-4 h-4 sm:w-5 sm:h-5" />
+          <div className="flex items-center gap-0.5 sm:gap-1">
+            <button onClick={toggleTheme}
+              className="text-neutral-400 hover:text-white transition-colors p-1.5 sm:p-2 rounded-lg hover:bg-neutral-800"
+              title={theme === 'dark' ? 'Light mode' : 'Dark mode'}
+            >
+              {theme === 'dark' ? <Sun className="w-4 h-4 sm:w-[18px] sm:h-[18px]" /> : <Moon className="w-4 h-4 sm:w-[18px] sm:h-[18px]" />}
             </button>
-            {showMenu && (
-              <div className="absolute right-0 top-full mt-1 bg-neutral-800 border border-neutral-700 rounded-lg py-1 min-w-[160px] sm:min-w-[180px] shadow-lg z-50">
-                <div className="px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm text-neutral-400 border-b border-neutral-700">
-                  {user?.name}{user?.email ? <span className="block text-[10px] sm:text-xs text-neutral-500 truncate">{user.email}</span> : null}
+            <button onClick={() => setShowSettings(true)}
+              className="text-neutral-400 hover:text-white transition-colors p-1.5 sm:p-2 rounded-lg hover:bg-neutral-800"
+              title="Settings"
+            >
+              <Settings className="w-4 h-4 sm:w-[18px] sm:h-[18px]" />
+            </button>
+            <div className="relative shrink-0" ref={menuRef}>
+              <button onClick={() => setShowMenu(v => !v)}
+                className="ml-1 sm:ml-2 w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-emerald-600 hover:bg-emerald-500 flex items-center justify-center text-xs sm:text-sm font-bold text-white transition-colors"
+                title="Menu"
+              >
+                {user?.name?.charAt(0)?.toUpperCase() || <User className="w-3.5 h-3.5 sm:w-4 sm:h-4" />}
+              </button>
+              {showMenu && (
+                <div className="absolute right-0 top-full mt-1.5 bg-neutral-800 border border-neutral-700 rounded-lg py-1 min-w-[170px] shadow-lg z-50">
+                  <div className="px-4 py-2 text-sm text-neutral-400 border-b border-neutral-700">
+                    {user?.name}
+                    {user?.email ? <span className="block text-xs text-neutral-500 truncate">{user.email}</span> : null}
+                  </div>
+                  <button onClick={() => { setShowTradeList(true); setShowMenu(false); }}
+                    className="w-full text-left px-4 py-2 text-sm text-neutral-400 hover:text-white hover:bg-neutral-700/50 transition-colors">
+                    Trades
+                  </button>
+                  <div className="border-t border-neutral-700" />
+                  <button onClick={logout}
+                    className="w-full text-left px-4 py-2 text-sm text-red-400 hover:text-red-300 hover:bg-neutral-700/50 transition-colors">
+                    Logout
+                  </button>
                 </div>
-                <button onClick={() => { setShowTradeList(true); setShowMenu(false); }}
-                  className="w-full text-left px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm text-neutral-400 hover:text-white hover:bg-neutral-700/50 transition-colors">
-                  Trades
-                </button>
-                <button onClick={() => { setShowSettings(true); setShowMenu(false); }}
-                  className="w-full text-left px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm text-neutral-400 hover:text-white hover:bg-neutral-700/50 transition-colors">
-                  Settings
-                </button>
-                <div className="border-t border-neutral-700 my-0.5 sm:my-1" />
-                <button onClick={toggleTheme}
-                  className="w-full text-left px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm text-neutral-400 hover:text-white hover:bg-neutral-700/50 transition-colors flex items-center justify-between">
-                  <span>{theme === 'dark' ? 'Dark Mode' : 'Light Mode'}</span>
-                  {theme === 'dark' ? <Moon className="w-3 sm:w-3.5 h-3 sm:h-3.5" /> : <Sun className="w-3 sm:w-3.5 h-3 sm:h-3.5" />}
-                </button>
-                <div className="border-t border-neutral-700 my-0.5 sm:my-1" />
-                <button onClick={logout}
-                  className="w-full text-left px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm text-neutral-500 hover:text-red-400 hover:bg-neutral-700/50 transition-colors">
-                  Logout
-                </button>
-              </div>
-            )}
+              )}
+            </div>
           </div>
         </div>
       </header>
@@ -280,12 +306,42 @@ export default function Dashboard() {
               </div>
             )}
 
-            <WeeklyStats trades={trades} accountCapital={accountCapital} accountId={selectedAccountId} year={year} month={month} />
+            <div className="flex items-center gap-2 mb-4">
+              <div className="relative">
+                <Filter className="w-4 h-4 text-neutral-500 absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                <select
+                  value={symbolFilter}
+                  onChange={(e) => setSymbolFilter(e.target.value)}
+                  className="bg-neutral-800 border border-neutral-700 rounded-lg pl-8 pr-3 py-2 text-sm text-white focus:outline-none focus:border-emerald-500 max-w-[220px]"
+                >
+                <option value="">All Symbols</option>
+                {Object.entries(INSTRUMENTS_BY_CATEGORY).map(([category, groups]) =>
+                  groups.map((group) => (
+                    <optgroup key={`${category}-${group.subcategory}`} label={`${CATEGORY_LABELS[category]} — ${SUBCATEGORY_LABELS[group.subcategory]}`}>
+                      {group.items.map((item) => (
+                        <option key={item.symbol} value={item.symbol}>{item.label}</option>
+                      ))}
+                    </optgroup>
+                  ))
+                )}
+              </select>
+            </div>
+              {symbolFilter && (
+                <button onClick={() => setSymbolFilter('')}
+                  className="text-neutral-500 hover:text-white transition-colors p-1">
+                  <X className="w-4 h-4" />
+                </button>
+              )}
+            </div>
+
+            <WeeklyStats trades={filteredTrades} accountCapital={accountCapital} accountId={selectedAccountId} year={year} month={month} />
+
+            <QuoteSection />
 
             <CalendarGrid
               year={year}
               month={month}
-              trades={trades}
+              trades={filteredTrades}
               onDayClick={handleDayClick}
               onPrevMonth={handlePrevMonth}
               onNextMonth={handleNextMonth}
@@ -338,6 +394,13 @@ export default function Dashboard() {
         onClose={() => setShowSettings(false)}
         onAccountsChange={loadAccounts}
       />
+
+      {showOnboarding && (
+        <OnboardingOverlay
+          onComplete={handleOnboardingComplete}
+          onSkip={handleOnboardingComplete}
+        />
+      )}
     </div>
   );
 }

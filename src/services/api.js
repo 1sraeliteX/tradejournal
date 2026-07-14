@@ -5,10 +5,25 @@ async function request(endpoint, options = {}) {
   const headers = { 'Content-Type': 'application/json', ...options.headers };
   if (token) headers['Authorization'] = `Bearer ${token}`;
 
-  const res = await fetch(`${API_BASE}${endpoint}`, { ...options, headers });
-  const data = await res.json();
+  let res;
+  try {
+    res = await fetch(`${API_BASE}${endpoint}`, { ...options, headers });
+  } catch {
+    throw new Error('Network error — please check your connection and try again.');
+  }
 
-  if (!res.ok) throw new Error(data.error || 'Request failed');
+  let data;
+  try {
+    data = await res.json();
+  } catch {
+    throw new Error(`Server returned ${res.status} with no JSON body.`);
+  }
+
+  if (!res.ok) {
+    const msg = data.error || 'Request failed';
+    const detail = data.fields ? data.fields.join(', ') : '';
+    throw new Error(detail ? `${msg}: ${detail}` : msg);
+  }
   return data;
 }
 

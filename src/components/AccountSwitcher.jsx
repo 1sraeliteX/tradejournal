@@ -8,6 +8,7 @@ export default function AccountSwitcher({ accounts, selectedId, onSelect, onAcco
   const [formName, setFormName] = useState('');
   const [formCapital, setFormCapital] = useState('');
   const [creating, setCreating] = useState(false);
+  const [createError, setCreateError] = useState('');
   const ref = useRef(null);
 
   useEffect(() => {
@@ -24,6 +25,7 @@ export default function AccountSwitcher({ accounts, selectedId, onSelect, onAcco
     setShowForm(false);
     setFormName('');
     setFormCapital('');
+    setCreateError('');
   };
 
   const handleCreate = async (e) => {
@@ -35,7 +37,8 @@ export default function AccountSwitcher({ accounts, selectedId, onSelect, onAcco
       resetForm();
       onAccountsChange?.();
       onSelect(data.id);
-    } catch {
+    } catch (err) {
+      setCreateError(err?.message || 'Failed to create account');
     } finally {
       setCreating(false);
     }
@@ -97,7 +100,10 @@ export default function AccountSwitcher({ accounts, selectedId, onSelect, onAcco
                 <input type="text" value={formName} onChange={(e) => setFormName(e.target.value)}
                   placeholder="Name" autoFocus
                   className="w-full bg-neutral-900 border border-neutral-700 rounded px-1.5 sm:px-2 py-1 sm:py-1.5 text-[10px] sm:text-xs text-white focus:outline-none focus:border-emerald-500" />
-                <input type="number" step="0.01" min="0" value={formCapital} onChange={(e) => setFormCapital(e.target.value)}
+                {createError && (
+                  <p className="text-[10px] text-red-400">{createError}</p>
+                )}
+                <input type="text" inputMode="decimal" value={formCapital} onChange={(e) => setFormCapital(e.target.value)}
                   placeholder="Capital ($)"
                   className="w-full bg-neutral-900 border border-neutral-700 rounded px-1.5 sm:px-2 py-1 sm:py-1.5 text-[10px] sm:text-xs text-white focus:outline-none focus:border-emerald-500" />
                 <button onClick={handleCreate} disabled={creating}

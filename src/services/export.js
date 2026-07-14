@@ -1,5 +1,13 @@
 import { jsPDF } from 'jspdf';
 
+function csvEscape(val) {
+  const s = String(val);
+  if (s.includes(',') || s.includes('"') || s.includes('\n')) {
+    return `"${s.replace(/"/g, '""')}"`;
+  }
+  return s;
+}
+
 export function exportToCSV(trades, filename) {
   const headers = ['Date', 'Market', 'Pair', 'Lot Size', 'Result', 'P&L', 'Risk/Reward', 'Notes'];
   const rows = trades.map(t => [
@@ -10,8 +18,8 @@ export function exportToCSV(trades, filename) {
     t.result,
     t.pnl_amount,
     t.risk_reward || '',
-    (t.notes || '').replace(/,/g, ';'),
-  ]);
+    t.notes || '',
+  ].map(csvEscape));
 
   const csv = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
   const blob = new Blob([csv], { type: 'text/csv' });

@@ -184,7 +184,9 @@ class TradeController
             $errors[] = 'result must be win or loss';
         }
         if (!isset($data['pnl_amount'])) $errors[] = 'pnl_amount is required';
-        if (!isset($data['target_amount'])) $errors[] = 'target_amount is required';
+        if (isset($data['target_amount']) && $data['target_amount'] !== null && (float)$data['target_amount'] < 0) {
+            $errors[] = 'target_amount must be non-negative';
+        }
 
         return $errors;
     }
