@@ -54,10 +54,10 @@ export default function CalendarGrid({ year, month, trades, onDayClick, onPrevMo
 
   const getCellStyle = (cell) => {
     const stats = dayStats[cell.date];
-    if (!stats || !cell.isCurrentMonth) return '';
-    if (stats.pnl > 0) return 'bg-emerald-600';
-    if (stats.pnl < 0) return 'bg-red-600';
-    return '';
+    if (!stats || !cell.isCurrentMonth) return null;
+    if (stats.pnl > 0) return `rgb(var(--win-color-rgb))`;
+    if (stats.pnl < 0) return `rgb(var(--loss-color-rgb))`;
+    return null;
   };
 
   const getAmountColor = (cell) => {
@@ -87,7 +87,7 @@ export default function CalendarGrid({ year, month, trades, onDayClick, onPrevMo
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
           </svg>
         </button>
-        <h2 className="text-sm sm:text-lg font-semibold text-white">{monthLabel}</h2>
+        <h2 className="text-[19px] sm:text-[23px] font-semibold text-white">{monthLabel}</h2>
         <button onClick={onNextMonth} className="text-neutral-400 hover:text-white transition-colors p-1.5 sm:p-2">
           <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -109,10 +109,14 @@ export default function CalendarGrid({ year, month, trades, onDayClick, onPrevMo
               onClick={() => cell.isCurrentMonth && onDayClick(cell.date)}
               className={`
                 relative rounded border sm:rounded-lg border p-0.5 sm:p-2 min-h-[44px] sm:min-h-[72px] text-left transition-colors
-                ${cell.isCurrentMonth ? `${cellStyle || 'bg-neutral-900'} border-white/10 sm:border-white/20 hover:border-white/40` : 'bg-neutral-900/50 border-transparent'}
-                ${isToday ? 'ring-1 ring-emerald-500' : ''}
+                ${cell.isCurrentMonth ? `${cellStyle ? '' : 'bg-neutral-900'} border-white/10 sm:border-white/20 hover:border-white/40` : 'bg-neutral-900/50 border-transparent'}
+                ${isToday ? 'ring-1' : ''}
                 ${(!stats || !cell.isCurrentMonth) ? 'cursor-default' : 'cursor-pointer'}
               `}
+              style={{
+                ...(cellStyle ? { backgroundColor: cellStyle } : {}),
+                ...(isToday ? { boxShadow: '0 0 0 1px rgb(var(--win-color-rgb))' } : {}),
+              }}
             >
               <span className={`text-[10px] sm:text-xs ${cell.isCurrentMonth ? 'text-neutral-300' : 'text-neutral-600'}`}>
                 {cell.day}

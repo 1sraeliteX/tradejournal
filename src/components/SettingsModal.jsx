@@ -1,10 +1,15 @@
 import { useState, useEffect } from 'react';
-import { X, Plus, Edit2, Trash2, User, Briefcase, Hash } from 'lucide-react';
+import { X, Plus, Edit2, Trash2, User, Briefcase, Hash, Palette } from 'lucide-react';
 import { api } from '../services/api';
 import { useAuth } from '../context/AuthContext';
+import { useTradeColors } from '../context/TradeColorContext';
+
+const WIN_PRESETS = ['#10b981', '#22c55e', '#06b6d4', '#3b82f6', '#8b5cf6', '#f59e0b'];
+const LOSS_PRESETS = ['#ef4444', '#f97316', '#e11d48', '#ec4899', '#a855f7', '#64748b'];
 
 export default function SettingsModal({ isOpen, onClose, onAccountsChange }) {
   const { user, updateUser } = useAuth();
+  const { colors, updateColors } = useTradeColors();
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
@@ -249,6 +254,59 @@ export default function SettingsModal({ isOpen, onClose, onAccountsChange }) {
                 <Plus className="w-4 h-4" /> Add Account
               </button>
             )}
+          </div>
+
+          <div>
+            <div className="flex items-center gap-2 mb-4">
+              <Palette className="w-4 h-4 text-emerald-400" />
+              <h3 className="text-sm font-semibold text-white">Trade Colors</h3>
+            </div>
+            <div className="bg-neutral-800/50 rounded-xl border border-neutral-700/50 p-4 space-y-4">
+              <div>
+                <label className="block text-xs text-neutral-400 mb-2">Win Day Color</label>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="color" value={colors.win}
+                    onChange={(e) => updateColors({ win: e.target.value })}
+                    className="w-8 h-8 rounded-lg cursor-pointer border border-neutral-600 bg-transparent"
+                  />
+                  <div className="flex gap-1.5">
+                    {WIN_PRESETS.map((c) => (
+                      <button
+                        key={c}
+                        onClick={() => updateColors({ win: c })}
+                        className={`w-7 h-7 rounded-lg border-2 transition-all ${
+                          colors.win === c ? 'border-white scale-110' : 'border-transparent'
+                        }`}
+                        style={{ backgroundColor: c }}
+                      />
+                    ))}
+                  </div>
+                </div>
+              </div>
+              <div>
+                <label className="block text-xs text-neutral-400 mb-2">Loss Day Color</label>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="color" value={colors.loss}
+                    onChange={(e) => updateColors({ loss: e.target.value })}
+                    className="w-8 h-8 rounded-lg cursor-pointer border border-neutral-600 bg-transparent"
+                  />
+                  <div className="flex gap-1.5">
+                    {LOSS_PRESETS.map((c) => (
+                      <button
+                        key={c}
+                        onClick={() => updateColors({ loss: c })}
+                        className={`w-7 h-7 rounded-lg border-2 transition-all ${
+                          colors.loss === c ? 'border-white scale-110' : 'border-transparent'
+                        }`}
+                        style={{ backgroundColor: c }}
+                      />
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 

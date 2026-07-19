@@ -39,6 +39,17 @@ export default function StatCards({ month, accountId, accountCapital, refreshKey
     );
   }
 
+  const getValueColor = (card) => {
+    if (!monthStats || !allTimeStats) return { color: 'rgb(var(--white))' };
+    if (card.key === 'balance') {
+      const balance = accountCapital > 0 ? accountCapital + allTimeStats.total_pnl : allTimeStats.total_pnl;
+      return balance >= 0 ? { color: 'rgb(var(--win-color-rgb))' } : { color: 'rgb(var(--loss-color-rgb))' };
+    }
+    if (card.key === 'best_day') return { color: 'rgb(var(--win-color-rgb))' };
+    if (card.key === 'worst_day') return allTimeStats.worst_day ? { color: 'rgb(var(--loss-color-rgb))' } : { color: 'rgb(var(--n4))' };
+    return { color: 'rgb(var(--white))' };
+  };
+
   const formatCurrency = (val) => {
     const abs = Math.abs(val).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     return val < 0 ? `-$${abs}` : `$${abs}`;
@@ -63,17 +74,6 @@ export default function StatCards({ month, accountId, accountCapital, refreshKey
     return '-';
   };
 
-  const getValueColor = (card) => {
-    if (!monthStats || !allTimeStats) return 'text-white';
-    if (card.key === 'balance') {
-      const balance = accountCapital > 0 ? accountCapital + allTimeStats.total_pnl : allTimeStats.total_pnl;
-      return balance >= 0 ? 'text-emerald-400' : 'text-red-400';
-    }
-    if (card.key === 'best_day') return 'text-emerald-400';
-    if (card.key === 'worst_day') return allTimeStats.worst_day ? 'text-red-400' : 'text-neutral-400';
-    return 'text-white';
-  };
-
   return (
     <div className="grid grid-cols-2 md:grid-cols-5 gap-3 sm:gap-4 mb-6 sm:mb-8">
       {cards.map((card) => (
@@ -85,15 +85,15 @@ export default function StatCards({ month, accountId, accountCapital, refreshKey
           {card.key === 'best_day' && allTimeStats.best_day ? (
             <div className="min-w-0">
               <div className="text-[10px] sm:text-xs text-neutral-500 mb-0.5 sm:mb-1 truncate">{formatDayLabel(allTimeStats.best_day.date)}</div>
-              <div className="text-lg sm:text-2xl font-bold text-emerald-400 truncate">+${Number(Math.abs(allTimeStats.best_day.pnl)).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+              <div className="text-lg sm:text-2xl font-bold truncate" style={{ color: 'rgb(var(--win-color-rgb))' }}>+${Number(Math.abs(allTimeStats.best_day.pnl)).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
             </div>
           ) : card.key === 'worst_day' && allTimeStats.worst_day ? (
             <div className="min-w-0">
               <div className="text-[10px] sm:text-xs text-neutral-500 mb-0.5 sm:mb-1 truncate">{formatDayLabel(allTimeStats.worst_day.date)}</div>
-              <div className="text-lg sm:text-2xl font-bold text-red-400 truncate">{formatCurrency(allTimeStats.worst_day.pnl)}</div>
+              <div className="text-lg sm:text-2xl font-bold truncate" style={{ color: 'rgb(var(--loss-color-rgb))' }}>{formatCurrency(allTimeStats.worst_day.pnl)}</div>
             </div>
           ) : (
-            <div className={`text-lg sm:text-2xl font-bold truncate ${getValueColor(card)}`}>
+            <div className={`text-lg sm:text-2xl font-bold truncate`} style={getValueColor(card)}>
               {getValue(card)}
             </div>
           )}

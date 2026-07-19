@@ -76,7 +76,7 @@ export default function TradeList({ isOpen, onClose, trades, onEdit, onDelete, o
               <div key={date}>
                 <div className="flex items-center justify-between mb-2 px-1 sm:px-2">
                   <h3 className="text-xs sm:text-sm font-medium text-neutral-400">{date}</h3>
-                  <span className={`text-[10px] sm:text-xs font-semibold ${dayPnl >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
+                  <span className="text-[10px] sm:text-xs font-semibold" style={{ color: dayPnl >= 0 ? 'rgb(var(--win-color-rgb))' : 'rgb(var(--loss-color-rgb))' }}>
                     {dayDisplay}
                   </span>
                 </div>
@@ -86,25 +86,27 @@ export default function TradeList({ isOpen, onClose, trades, onEdit, onDelete, o
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
                           <span className="text-white font-medium text-xs sm:text-sm">{trade.pair}</span>
-                          <span className={`text-[10px] sm:text-xs font-medium px-1 sm:px-1.5 py-0.5 rounded ${
-                            trade.result === 'win' ? 'bg-emerald-900/50 text-emerald-400' : 'bg-red-900/50 text-red-400'
-                          }`}>
+                          <span className={`text-[10px] sm:text-xs font-medium px-1 sm:px-1.5 py-0.5 rounded`}
+                            style={{
+                              backgroundColor: trade.result === 'win' ? 'rgb(var(--win-color-rgb) / 0.15)' : 'rgb(var(--loss-color-rgb) / 0.15)',
+                              color: trade.result === 'win' ? 'rgb(var(--win-color-rgb))' : 'rgb(var(--loss-color-rgb))',
+                            }}>
                             {trade.result.toUpperCase()}
                           </span>
                           <span className="text-neutral-500 text-[10px] sm:text-xs capitalize">{trade.market_type}</span>
                         </div>
                         <div className="text-[10px] sm:text-xs text-neutral-500 mt-0.5 leading-tight">
-                          Lot {trade.lot_size} &middot; Risk ${trade.risk_value} &middot; Target {trade.target_amount ? `$${Number(trade.target_amount).toLocaleString()}` : '-'}
+                          Lot {trade.lot_size} &middot; Risk ${trade.risk_value} &middot; Profit Target {trade.target_amount ? `$${Number(trade.target_amount).toLocaleString()}` : '-'}
                           {trade.notes && <span> &middot; &ldquo;{trade.notes}&rdquo;</span>}
                         </div>
                       </div>
                       <div className="flex items-center justify-between sm:justify-end gap-2 sm:gap-2">
                         <div className="flex items-center gap-1 sm:gap-2">
-                          <span className={`text-xs sm:text-sm font-semibold ${trade.result === 'win' ? 'text-emerald-400' : 'text-red-400'}`}>
+                          <span className="text-xs sm:text-sm font-semibold" style={{ color: trade.result === 'win' ? 'rgb(var(--win-color-rgb))' : 'rgb(var(--loss-color-rgb))' }}>
                             {formatCurrency(trade.pnl_amount)}
                           </span>
                           {calcTradePct(trade) && (
-                            <span className={`text-[10px] sm:text-xs font-medium ${trade.result === 'win' ? 'text-emerald-400/70' : 'text-red-400/70'}`}>
+                            <span className="text-[10px] sm:text-xs font-medium" style={{ color: trade.result === 'win' ? 'rgb(var(--win-color-rgb) / 0.7)' : 'rgb(var(--loss-color-rgb) / 0.7)' }}>
                               {calcTradePct(trade)}
                             </span>
                           )}

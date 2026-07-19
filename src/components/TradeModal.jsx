@@ -151,7 +151,7 @@ export default function TradeModal({ isOpen, onClose, onSave, trade, prefillDate
       const risk_value = parseFloat(form.risk_value);
       const pnl_amount = parseFloat(form.pnl_amount);
       if (isNaN(lot_size) || isNaN(risk_value) || isNaN(pnl_amount)) {
-        setError('Please enter valid numbers for Lot Size, Risk Value, and P&L Amount.');
+        setError('Please enter valid numbers for Lot Size, Risk Value, and Trade Outcome.');
         setSaving(false);
         return;
       }
@@ -281,7 +281,7 @@ export default function TradeModal({ isOpen, onClose, onSave, trade, prefillDate
               <div className="flex gap-2">
                 {['amount', 'percentage'].map((type) => (
                   <button key={type} type="button" onClick={() => handleChange('risk_type', type)}
-                    className={`flex-1 py-2 rounded-lg text-sm font-medium transition-colors capitalize ${
+                    className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-colors capitalize ${
                       form.risk_type === type
                         ? 'bg-emerald-600 text-white'
                         : 'bg-neutral-800 text-neutral-400 hover:text-white'
@@ -309,21 +309,29 @@ export default function TradeModal({ isOpen, onClose, onSave, trade, prefillDate
                 <option value="1:3">1:3</option>
                 <option value="1:4">1:4</option>
                 <option value="1:5">1:5</option>
-                <option value="2:1">2:1</option>
-                <option value="3:1">3:1</option>
+                <option value="1:6">1:6</option>
+                <option value="1:7">1:7</option>
+                <option value="1:8">1:8</option>
+                <option value="1:9">1:9</option>
+                <option value="1:10">1:10</option>
+                <option value="1:11">1:11</option>
+                <option value="1:12">1:12</option>
+                <option value="1:13">1:13</option>
+                <option value="1:14">1:14</option>
+                <option value="1:15">1:15</option>
                 <option value="other">Other</option>
               </select>
             </div>
           </div>
 
           <div>
-            <label className="block text-sm text-neutral-400 mb-1">Target ({riskUnit})</label>
+            <label className="block text-sm text-neutral-400 mb-1">Profit Target ({riskUnit})</label>
             <input type="text" inputMode="decimal" value={form.target_amount} onChange={(e) => handleChange('target_amount', e.target.value)}
               className="w-full bg-neutral-800 border border-neutral-700 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-emerald-500" />
           </div>
 
           <div>
-            <label className="block text-sm text-neutral-400 mb-1">Result</label>
+            <label className="block text-sm text-neutral-400 mb-1">Trade Result</label>
             <div className="flex gap-2">
               {['win', 'loss'].map((r) => (
                 <button key={r} type="button" onClick={() => handleChange('result', r)}
@@ -339,7 +347,7 @@ export default function TradeModal({ isOpen, onClose, onSave, trade, prefillDate
           </div>
 
           <div>
-            <label className="block text-sm text-neutral-400 mb-1">P&L Amount ($)</label>
+            <label className="block text-sm text-neutral-400 mb-1">Trade Outcome ($)</label>
             <input type="text" inputMode="decimal" value={form.pnl_amount} onChange={(e) => handleChange('pnl_amount', e.target.value)} required
               className="w-full bg-neutral-800 border border-neutral-700 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-emerald-500" />
           </div>

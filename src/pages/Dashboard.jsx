@@ -68,6 +68,13 @@ export default function Dashboard() {
     }
   }, [accounts, selectedAccountId]);
 
+  useEffect(() => {
+    const now = new Date();
+    setYear(now.getFullYear());
+    setMonth(now.getMonth() + 1);
+    setSelectedDay(null);
+  }, [selectedAccountId]);
+
   const handleCreateAccount = async (e) => {
     e.preventDefault();
     if (!onboardingName.trim()) return;
@@ -212,7 +219,7 @@ export default function Dashboard() {
       <header className="border-b border-neutral-800">
         <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-3 sm:py-4 flex items-center justify-between gap-2 sm:gap-3">
           <div className="flex items-center gap-2 sm:gap-6 min-w-0">
-            <h1 className="text-base sm:text-xl font-bold text-white shrink-0">TradeJournal</h1>
+            <h1 className="text-base sm:text-xl font-bold text-white shrink-0">The boring trader</h1>
             <div className="min-w-0 max-w-[140px] sm:max-w-none">
               <AccountSwitcher
                 accounts={accounts}
@@ -267,7 +274,7 @@ export default function Dashboard() {
       <main className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-3 sm:py-8 pb-16 sm:pb-8">
         {!accountsLoaded ? null : accounts.length === 0 ? (
           <div className="max-w-md mx-auto mt-16 text-center">
-            <h2 className="text-2xl font-bold text-white mb-2">Welcome to TradeJournal</h2>
+            <h2 className="text-2xl font-bold text-white mb-2">Welcome to The boring trader</h2>
             <p className="text-neutral-400 mb-8">Create your first trading account to get started.</p>
             <form onSubmit={handleCreateAccount} className="bg-neutral-900 rounded-xl border border-neutral-800 p-6 space-y-4 text-left">
               <div>
@@ -297,44 +304,45 @@ export default function Dashboard() {
             )}
             <StatCards month={monthStr} accountId={selectedAccountId} accountCapital={accountCapital} refreshKey={statsKey} />
 
-            {accountCapital > 0 && (
-              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-1 sm:gap-3 mb-4 bg-neutral-900 rounded-xl border border-neutral-800 px-4 sm:px-5 py-3">
-                <span className="text-xs sm:text-sm text-neutral-400">Account Capital:</span>
-                <span className="text-base sm:text-lg font-bold text-white">
-                  ${Number(accountCapital).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                </span>
-              </div>
-            )}
-
-            <div className="flex items-center gap-2 mb-4">
-              <div className="relative">
-                <Filter className="w-4 h-4 text-neutral-500 absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
-                <select
-                  value={symbolFilter}
-                  onChange={(e) => setSymbolFilter(e.target.value)}
-                  className="bg-neutral-800 border border-neutral-700 rounded-lg pl-8 pr-3 py-2 text-sm text-white focus:outline-none focus:border-emerald-500 max-w-[220px]"
-                >
-                <option value="">All Symbols</option>
-                {Object.entries(INSTRUMENTS_BY_CATEGORY).map(([category, groups]) =>
-                  groups.map((group) => (
-                    <optgroup key={`${category}-${group.subcategory}`} label={`${CATEGORY_LABELS[category]} — ${SUBCATEGORY_LABELS[group.subcategory]}`}>
-                      {group.items.map((item) => (
-                        <option key={item.symbol} value={item.symbol}>{item.label}</option>
-                      ))}
-                    </optgroup>
-                  ))
-                )}
-              </select>
-            </div>
-              {symbolFilter && (
-                <button onClick={() => setSymbolFilter('')}
-                  className="text-neutral-500 hover:text-white transition-colors p-1">
-                  <X className="w-4 h-4" />
-                </button>
-              )}
-            </div>
-
             <WeeklyStats trades={filteredTrades} accountCapital={accountCapital} accountId={selectedAccountId} year={year} month={month} />
+
+            <div className="flex items-center gap-3 mb-4">
+              {accountCapital > 0 && (
+                <div className="flex items-center gap-1 sm:gap-3 bg-neutral-900 rounded-xl border border-neutral-800 px-4 sm:px-5 py-3 flex-1 min-w-0">
+                  <span className="text-xs sm:text-sm text-neutral-400 shrink-0">Account Capital:</span>
+                  <span className="text-base sm:text-lg font-bold text-white truncate">
+                    ${Number(accountCapital).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  </span>
+                </div>
+              )}
+              <div className="flex items-center gap-2 shrink-0">
+                <div className="relative">
+                  <Filter className="w-4 h-4 text-neutral-500 absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                  <select
+                    value={symbolFilter}
+                    onChange={(e) => setSymbolFilter(e.target.value)}
+                    className="bg-neutral-800 border border-neutral-700 rounded-lg pl-8 pr-3 py-3 text-sm text-white focus:outline-none focus:border-emerald-500 max-w-[220px]"
+                  >
+                  <option value="">All Symbols</option>
+                  {Object.entries(INSTRUMENTS_BY_CATEGORY).map(([category, groups]) =>
+                    groups.map((group) => (
+                      <optgroup key={`${category}-${group.subcategory}`} label={`${CATEGORY_LABELS[category]} — ${SUBCATEGORY_LABELS[group.subcategory]}`}>
+                        {group.items.map((item) => (
+                          <option key={item.symbol} value={item.symbol}>{item.label}</option>
+                        ))}
+                      </optgroup>
+                    ))
+                  )}
+                </select>
+              </div>
+                {symbolFilter && (
+                  <button onClick={() => setSymbolFilter('')}
+                    className="text-neutral-500 hover:text-white transition-colors p-1">
+                    <X className="w-4 h-4" />
+                  </button>
+                )}
+              </div>
+            </div>
 
             <QuoteSection />
 

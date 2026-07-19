@@ -9,7 +9,7 @@ function csvEscape(val) {
 }
 
 export function exportToCSV(trades, filename) {
-  const headers = ['Date', 'Market', 'Pair', 'Lot Size', 'Result', 'P&L', 'Risk/Reward', 'Notes'];
+  const headers = ['Date', 'Market', 'Pair', 'Lot Size', 'Trade Result', 'P&L', 'Risk/Reward', 'Notes'];
   const rows = trades.map(t => [
     t.trade_date,
     t.market_type,
@@ -215,7 +215,7 @@ export function exportToPDF(trades, { from, to, label, accountCapital }) {
       { label: 'Pair', w: 22 },
       { label: 'Market', w: 18 },
       { label: 'Lot', w: 12 },
-      { label: 'Result', w: 14 },
+      { label: 'Trade Result', w: 14 },
       { label: 'P&L', w: 20 },
       { label: 'R:R', w: 12 },
       { label: 'Notes', w: contentW - 22 - 22 - 18 - 12 - 14 - 20 - 12 },

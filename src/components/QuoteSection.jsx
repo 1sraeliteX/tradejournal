@@ -57,27 +57,27 @@ export default function QuoteSection() {
             >
               Save
             </button>
-            <button
-              onClick={handleCancel}
-              className="px-4 py-1.5 text-sm font-medium text-neutral-400 hover:text-white transition-colors"
-            >
-              Cancel
-            </button>
-            {quote && (
               <button
-                onClick={handleClear}
-                className="ml-auto px-4 py-1.5 text-sm font-medium text-red-400 hover:text-red-300 transition-colors"
+                onClick={handleCancel}
+                className="px-4 py-1.5 text-sm font-medium text-neutral-500 hover:text-white transition-colors"
               >
-                Remove
+                Cancel
               </button>
-            )}
+              {quote && (
+                <button
+                  onClick={handleClear}
+                  className="ml-auto px-4 py-1.5 text-sm font-medium text-red-600 hover:text-red-500 transition-colors"
+                >
+                  Remove
+                </button>
+              )}
           </div>
         </div>
       ) : (
         <div className="flex items-center gap-3">
           <div className="flex-1 min-w-0 text-center">
             {quote ? (
-              <p className="text-sm sm:text-base text-neutral-200 italic leading-relaxed">&ldquo;{quote}&rdquo;</p>
+              <p className="text-sm sm:text-base text-white italic leading-relaxed">&ldquo;{quote}&rdquo;</p>
             ) : (
               <p className="text-sm text-neutral-500 italic">Add a daily reminder&hellip;</p>
             )}

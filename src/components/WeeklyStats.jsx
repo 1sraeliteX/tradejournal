@@ -119,12 +119,12 @@ export default function WeeklyStats({ trades, accountCapital, accountId, year, m
           return (
             <div key={w.week} className="bg-neutral-800/60 rounded-lg p-3 sm:p-4 text-center min-w-0">
               <div className="text-[10px] sm:text-xs text-neutral-400 mb-1 sm:mb-2">{WEEK_LABELS[w.week]}</div>
-              <div className={`text-base sm:text-xl font-bold mb-1 sm:mb-2 ${w.pct >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
+              <div className="text-base sm:text-xl font-bold mb-1 sm:mb-2" style={{ color: w.pct >= 0 ? 'rgb(var(--win-color-rgb))' : 'rgb(var(--loss-color-rgb))' }}>
                 {w.pct > 0 ? '+' : ''}{w.pct}%
               </div>
               <div className="flex items-center justify-center gap-2 sm:gap-3 text-[10px] sm:text-xs">
-                <span className="text-emerald-400/80">W:{w.wins}</span>
-                <span className="text-red-400/80">L:{w.losses}</span>
+                <span style={{ color: 'rgb(var(--win-color-rgb) / 0.8)' }}>W:{w.wins}</span>
+                <span style={{ color: 'rgb(var(--loss-color-rgb) / 0.8)' }}>L:{w.losses}</span>
               </div>
               <ExportBtns from={range.from} to={range.to} label={`Week ${w.week + 1}`} />
             </div>
@@ -132,18 +132,18 @@ export default function WeeklyStats({ trades, accountCapital, accountId, year, m
         })}
         <div className="bg-emerald-900/20 rounded-lg p-3 sm:p-4 text-center ring-1 ring-emerald-700/30 min-w-0">
           <div className="text-[10px] sm:text-xs text-neutral-400 mb-1 sm:mb-2">Month</div>
-          <div className={`text-base sm:text-xl font-bold mb-1 sm:mb-2 ${data.monthPct >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
+          <div className="text-base sm:text-xl font-bold mb-1 sm:mb-2" style={{ color: data.monthPct >= 0 ? 'rgb(var(--win-color-rgb))' : 'rgb(var(--loss-color-rgb))' }}>
             {data.monthPct > 0 ? '+' : ''}{data.monthPct}%
           </div>
           <div className="flex items-center justify-center gap-2 sm:gap-3 text-[10px] sm:text-xs">
-            <span className="text-emerald-400/80">W:{data.monthWins}</span>
-            <span className="text-red-400/80">L:{data.monthLosses}</span>
+            <span style={{ color: 'rgb(var(--win-color-rgb) / 0.8)' }}>W:{data.monthWins}</span>
+            <span style={{ color: 'rgb(var(--loss-color-rgb) / 0.8)' }}>L:{data.monthLosses}</span>
           </div>
           <ExportBtns from={`${year}-${pad(month)}-01`} to={`${year}-${pad(month)}-${pad(daysInMonth)}`} label="Month" />
         </div>
         <div className="bg-neutral-800/60 rounded-lg p-3 sm:p-4 text-center ring-1 ring-neutral-600/30 min-w-0">
           <div className="text-[10px] sm:text-xs text-neutral-400 mb-1 sm:mb-2">{year}</div>
-          <div className={`text-base sm:text-xl font-bold mb-1 sm:mb-2 ${yearPct >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
+          <div className="text-base sm:text-xl font-bold mb-1 sm:mb-2" style={{ color: yearPct >= 0 ? 'rgb(var(--win-color-rgb))' : 'rgb(var(--loss-color-rgb))' }}>
             {yearPct > 0 ? '+' : ''}{yearPct}%
           </div>
           <div className="text-[10px] sm:text-xs text-white mb-1">{yearTrades} trade{yearTrades !== 1 ? 's' : ''}</div>
